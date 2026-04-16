@@ -175,9 +175,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
     </div>
     <div class="cb">
       <input type="file" id="fi" accept=".csv,.tsv,.txt" style="display:none">
-      <label class="uzone" id="uz" for="fi">
+      <div class="uzone" id="uz">
         <div id="ui"><div class="uico">&#128194;</div><div class="uttl">Drop CSV here or click to browse</div><div class="uhnt">Any size &nbsp;&middot;&nbsp; Comma or tab delimited &nbsp;&middot;&nbsp; Fully offline</div></div>
-      </label>
+      </div>
     </div>
   </div>
 
@@ -362,9 +362,12 @@ document.getElementById('ex-dl').addEventListener('click',triggerDownload);
 document.getElementById('ex-cp').addEventListener('click',copyExport);
 
 const fi=g('fi'),uz=g('uz');
-// label[for=fi] handles click natively — no JS click listener needed
-// Reset value so re-selecting the same file always fires change
-fi.addEventListener('click',function(){this.value='';});
+uz.addEventListener('click',function(e){
+  // prevent child element clicks from firing this twice
+  if(e.target!==uz&&e.target!==g('ui')&&!g('ui').contains(e.target))return;
+  fi.value=''; // reset so same file always re-triggers change
+  fi.click();
+});
 fi.addEventListener('change',function(e){
   var f=e.target.files&&e.target.files[0];
   if(f) loadHeader(f);
