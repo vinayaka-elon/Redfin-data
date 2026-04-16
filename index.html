@@ -124,37 +124,39 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
 ::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:var(--su2)}::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:3px}
 
 
-/* ── dynamic guide ── */
+/* ── guide ── */
 .guide-empty{text-align:center;padding:32px 0;color:var(--tx3);font-size:13px}
-.qgroup{margin-bottom:22px}.qgroup:last-child{margin-bottom:0}
-.qgroup-hdr{font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
-  color:var(--tx3);margin-bottom:10px;display:flex;align-items:center;gap:8px}
-.qgroup-hdr .gbar{width:3px;height:14px;border-radius:2px;flex-shrink:0}
-.qrow{border:1px solid var(--bd);border-radius:var(--r);margin-bottom:8px;overflow:hidden;
-  transition:border-color .15s}
+.qgroup{margin-bottom:20px}.qgroup:last-child{margin-bottom:0}
+.qgroup-lbl{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--tx3);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.qgroup-lbl .gb{width:3px;height:12px;border-radius:2px;flex-shrink:0}
+.qrow{border:1px solid var(--bd);border-radius:var(--r);margin-bottom:7px;overflow:hidden}
 .qrow:last-child{margin-bottom:0}
 .qrow.open{border-color:var(--bd2)}
-.qtrigger{display:flex;align-items:center;gap:12px;padding:12px 15px;cursor:pointer;
-  background:var(--su);user-select:none;transition:background .12s}
-.qtrigger:hover{background:var(--su2)}
-.qrow.open .qtrigger{background:var(--su2)}
-.qarrow{font-size:11px;color:var(--tx3);flex-shrink:0;transition:transform .18s;line-height:1}
-.qrow.open .qarrow{transform:rotate(90deg)}
-.qtext{font-size:13px;font-weight:500;color:var(--tx);line-height:1.45;flex:1}
-.qmatch{font-family:var(--mo);font-size:10px;color:var(--tx3);flex-shrink:0;white-space:nowrap}
+.qtrig{display:flex;align-items:flex-start;gap:11px;padding:13px 15px;cursor:pointer;
+  background:var(--su);user-select:none;transition:background .1s}
+.qtrig:hover,.qrow.open .qtrig{background:var(--su2)}
+.qarr{font-size:10px;color:var(--tx3);flex-shrink:0;margin-top:3px;transition:transform .18s;line-height:1}
+.qrow.open .qarr{transform:rotate(90deg)}
+.qmain{flex:1}
+.qtitle{font-size:13px;font-weight:600;color:var(--tx);line-height:1.45;margin-bottom:4px}
+.qangle{font-size:12px;color:var(--tx2);line-height:1.5}
+.qvars{font-family:var(--mo);font-size:10px;color:var(--tx3);margin-top:5px}
 .qdrop{display:none;border-top:1px solid var(--bd)}
 .qrow.open .qdrop{display:grid;grid-template-columns:1fr 1fr 1fr}
 @media(max-width:680px){.qrow.open .qdrop{grid-template-columns:1fr}}
-.qpanel{padding:14px 16px;border-right:1px solid var(--bd);background:var(--su)}
+.qpanel{padding:14px 16px;border-right:1px solid var(--bd)}
 .qpanel:last-child{border-right:none}
-.qpanel-lbl{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+.qpanel-lbl{font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;
   color:var(--tx3);margin-bottom:9px}
-.qpanel ul{padding-left:15px;margin:0;display:flex;flex-direction:column;gap:7px}
-.qpanel li{font-size:12px;color:var(--tx);line-height:1.55}
-.qpanel li b{font-weight:600}
-.ntag{display:inline-block;font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px;
-  margin-bottom:4px;background:var(--su2);border:1px solid var(--bd2);color:var(--tx2);
+.qpanel ol{padding-left:16px;margin:0;display:flex;flex-direction:column;gap:8px}
+.qpanel ol li{font-size:12px;color:var(--tx);line-height:1.55}
+.qpanel ol li b{font-weight:600}
+.ntag{display:inline-block;font-size:10px;font-weight:500;padding:1px 7px;border-radius:20px;
+  margin-bottom:3px;background:var(--su3);border:1px solid var(--bd2);color:var(--tx2);
   font-family:var(--mo)}
+.qpanel ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px}
+.qpanel ul li{font-size:12px;color:var(--tx);line-height:1.55}
 </style>
 </head>
 <body>
@@ -169,26 +171,12 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
   <!-- 00 load -->
   <div class="card">
     <div class="ch"><span class="stag">STEP 00</span>
-      <div><div class="ct">Load dataset</div><div class="cs" id="load-sub">Looking for dataset in this folder&hellip;</div></div>
-      <div class="ca">
-        <button class="btn" id="btn-upload" style="display:none" onclick="document.getElementById('fi').click()">&#128194; Upload instead</button>
-      </div>
+      <div><div class="ct">Load dataset</div><div class="cs">Reads only the header row &mdash; the full file streams during Process and Export</div></div>
     </div>
     <div class="cb">
       <input type="file" id="fi" accept=".csv,.tsv,.txt" style="display:none">
-      <div id="auto-bar" style="display:none">
-        <div class="pbo"><div class="pbi" id="auto-pbi" style="width:0%"></div></div>
-        <div class="plbl" id="auto-lbl">Connecting&hellip;</div>
-      </div>
-      <div class="uzone" id="uz" style="display:none">
+      <div class="uzone" id="uz">
         <div id="ui"><div class="uico">&#128194;</div><div class="uttl">Drop CSV here or click to browse</div><div class="uhnt">Any size &nbsp;&middot;&nbsp; Comma or tab delimited &nbsp;&middot;&nbsp; Fully offline</div></div>
-      </div>
-      <div id="repo-ok" style="display:none;background:var(--okb);border:1px solid var(--okx);border-radius:var(--r);padding:14px 18px;display:none;align-items:center;gap:12px">
-        <span style="font-size:22px">&#9989;</span>
-        <div>
-          <div style="font-weight:600;font-size:14px;color:var(--ok)" id="repo-ok-title"></div>
-          <div style="font-size:12px;color:var(--tx2);margin-top:2px" id="repo-ok-sub"></div>
-        </div>
       </div>
     </div>
   </div>
@@ -262,18 +250,18 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
     <div class="twrap"><table class="dt"><thead id="th"></thead><tbody id="tb"></tbody></table></div>
   </div>
 
-  <!-- 05 guidance: dynamic -->
+  <!-- 05 guidance -->
   <div class="card" id="sguide">
     <div class="ch">
       <span class="stag">GUIDE</span>
       <div>
         <div class="ct">Research questions</div>
-        <div class="cs" id="guide-sub">Select variables in Step 01 — questions matched to your selection will appear here.</div>
+        <div class="cs" id="guide-sub">Select variables above — story questions matched to your selection appear here.</div>
       </div>
       <div class="ca" id="guide-count" style="font-family:var(--mo);font-size:12px;color:var(--tx2)"></div>
     </div>
     <div class="cb" id="guide-body">
-      <div class="guide-empty">&#8593; Select some variables in Step 01 to see relevant research questions</div>
+      <div class="guide-empty">&#8593; Select variables in Step 01 to see story questions</div>
     </div>
   </div>
 </div><!-- /wrap -->
@@ -373,7 +361,12 @@ document.getElementById('ex-close').addEventListener('click',function(){hide('ex
 document.getElementById('ex-dl').addEventListener('click',triggerDownload);
 document.getElementById('ex-cp').addEventListener('click',copyExport);
 
-const fi=g('fi'),uz=g('uz'); // event wiring handled in auto-load section below
+const fi=g('fi'),uz=g('uz');
+uz.addEventListener('click',function(){fi.click();});
+fi.addEventListener('change',function(e){if(e.target.files[0])loadHeader(e.target.files[0]);});
+uz.addEventListener('dragover',function(e){e.preventDefault();uz.classList.add('drag');});
+uz.addEventListener('dragleave',function(){uz.classList.remove('drag');});
+uz.addEventListener('drop',function(e){e.preventDefault();uz.classList.remove('drag');if(e.dataTransfer.files[0])loadHeader(e.dataTransfer.files[0]);});
 
 function loadHeader(file){
   curFile=file;
@@ -611,560 +604,313 @@ function copyExport(){
 }
 function fallbackCopy(text,btn){const ta=g('ex-ta');ta.value=text;ta.select();try{document.execCommand('copy');btn.textContent='\u2713 Copied!';setTimeout(function(){btn.textContent='\u{1F4CB} Copy to clipboard';},2500);}catch(e){}}
 
-// Complete question bank — plain language, thorough analytics, clear narrative types
 const QUESTIONS = [
 
-  // ── PRICE TREND ────────────────────────────────────────────────────────
   {
-    group: 'Sale price',
-    needs: ['MEDIAN_SALE_PRICE'],
-    q: 'How has the median home sale price changed over your selected time range?',
+    group: 'Affordability',
+    theme: 'teal',
+    needs: ['MEDIAN_SALE_PRICE', 'MEDIAN_SALE_PRICE_YOY', 'MEDIAN_PPSF'],
+    q: 'Is homeownership slipping out of reach for ordinary Americans?',
+    angle: 'Prices rose faster in the last five years than in the previous twenty combined. This story is about who gets left behind.',
     analytics: [
-      { s: 'Plot the trend line', d: 'Create a line chart of MEDIAN_SALE_PRICE over time. This is your baseline visual.' },
-      { s: 'Calculate total % change', d: 'Divide the last value by the first value, subtract 1. This gives the full period return.' },
-      { s: 'Run a simple linear regression', d: 'Regress MEDIAN_SALE_PRICE on time (month number). The slope tells you the average dollar increase per month. Check R² — if above 0.7, the trend is strong and consistent.' },
-      { s: 'Test for a structural break', d: 'If you suspect prices changed behavior at a point (e.g., mid-2022), split the data into two periods and compare regression slopes using a Chow test or just visual inspection of two separate trend lines.' },
-      { s: 'Describe variability', d: 'Calculate the standard deviation of monthly prices. High standard deviation means a volatile market; low means steady.' },
+      { s: 'Show the full price journey', d: 'Chart median sale price from your earliest year to your latest. Let the shape of the line tell the story before you explain it.' },
+      { s: 'Find the tipping point', d: 'At what year did prices cross a threshold that made a median-income household unable to qualify for a typical mortgage? Anchor your analysis to a real number — not just a percentage change.' },
+      { s: 'Measure the pace of change', d: 'Fit a trend line (linear regression) to prices. The slope in dollars per month tells you how quickly affordability erodes. Compare that slope for 2015–2019 vs. 2020–2023.' },
+      { s: 'Test whether the acceleration was real', d: 'Use a t-test to compare average YoY price growth between the pre-pandemic and pandemic periods. If p < 0.05, the acceleration is statistically significant — not just a run of lucky months.' },
     ],
     narratives: [
-      { type: 'Change over time', how: 'Open by stating the price at the start and end of your period. Then find the single biggest year of change and explain what was happening economically at that moment.' },
-      { type: 'The turning point', how: 'Identify the exact month prices peaked or bottomed. Build your story around what changed before and after that date.' },
-      { type: 'Magnitude', how: 'Instead of just showing a percentage, convert it: "A home that cost $250,000 in 2019 would cost $X today." That makes the number real to a reader.' },
+      { type: 'Human cost first', how: 'Open with what the numbers mean for a real person — a teacher, a nurse, someone earning the median wage in a given state. How many months of income does a down payment now require? Then show the data.' },
+      { type: 'Before and after', how: 'Split your story cleanly into pre-2020 and post-2020. Show that prices were already rising slowly, then something changed. Let the reader feel the before/after contrast.' },
+      { type: 'The widening gap', how: 'Frame the story as a growing distance between wages and home prices. If wages grew 15% while prices grew 45%, that gap is your headline.' },
     ],
   },
 
   {
-    group: 'Sale price',
-    needs: ['MEDIAN_SALE_PRICE_YOY'],
-    q: 'When did price growth accelerate, and when did it slow down or reverse?',
+    group: 'Affordability',
+    theme: 'teal',
+    needs: ['MEDIAN_SALE_PRICE', 'MEDIAN_LIST_PRICE', 'AVG_SALE_TO_LIST'],
+    q: 'Are buyers finally regaining negotiating power after years of overbidding?',
+    angle: 'For two years, buyers routinely paid more than asking price. That era may be ending — but not everywhere.',
     analytics: [
-      { s: 'Chart the YoY rate', d: 'Line chart of MEDIAN_SALE_PRICE_YOY. Positive = prices rising vs. a year ago. Negative = falling. This shows momentum, not just level.' },
-      { s: 'Find peak and trough', d: 'Note the month with the highest YoY and the month with the lowest (or most negative) YoY. These are your story\'s key dates.' },
-      { s: 'Test if deceleration is statistically significant', d: 'Compare mean YoY in the boom period vs. the cool-down period using a two-sample t-test. A p-value below 0.05 confirms the slowdown is real, not random noise.' },
-      { s: 'Smooth out noise', d: 'Calculate a 3-month rolling average of YoY to make the trend cleaner if the monthly data is choppy.' },
+      { s: 'Find when the tide turned', d: 'Chart the sale-to-list ratio over time. The month it crossed back below 1.0 — where homes stopped selling above ask — is the central moment of this story.' },
+      { s: 'Compare two eras', d: 'Calculate the average sale-to-list ratio during 2020–2022 and again during 2023–2024. A t-test confirms whether the shift is statistically real.' },
+      { s: 'Map where power has shifted most', d: 'For each state, compute average sale-to-list for the last 12 months. Rank from highest to lowest. That ranking shows where sellers still dominate and where buyers have reclaimed leverage.' },
     ],
     narratives: [
-      { type: 'Change over time', how: 'Tell it as a speed story: prices were accelerating, then they hit the brakes. Show the acceleration and deceleration clearly.' },
-      { type: 'The turning point', how: 'Find the exact month YoY went negative and treat that as the central moment of your story.' },
+      { type: 'The turning point', how: 'Build the whole story around one specific month — the moment overbidding peaked, then started declining. Everything before is context; everything after is consequence.' },
+      { type: 'Winners and losers', how: 'Buyers in some states now routinely negotiate discounts. Buyers in others are still overbidding. That geographic split is the most actionable finding for your audience.' },
     ],
   },
 
   {
-    group: 'Sale price',
-    needs: ['MEDIAN_SALE_PRICE', 'MEDIAN_LIST_PRICE'],
-    q: 'Are homes selling above or below their asking price, and how has that shifted over time?',
+    group: 'The boom and its aftermath',
+    theme: 'red',
+    needs: ['MEDIAN_SALE_PRICE_YOY', 'PRICE_DROPS'],
+    q: 'Did the pandemic housing boom create a bubble — and is it deflating?',
+    angle: 'Price growth hit 20% annually at its peak. Calling it a bubble depends on whether corrections follow. The data has an answer.',
     analytics: [
-      { s: 'Calculate the gap each month', d: 'Subtract MEDIAN_LIST_PRICE from MEDIAN_SALE_PRICE. A positive number means homes sold above ask; negative means sellers discounted.' },
-      { s: 'Track AVG_SALE_TO_LIST as a ratio', d: 'If you have it: 1.02 means 2% above list on average. Chart this monthly to see when buyers stopped overbidding.' },
-      { s: 'Run a t-test between two periods', d: 'Compare the average gap during 2020-2021 vs. 2023-2024. A t-test tells you whether the difference is statistically significant.' },
-      { s: 'Correlation with inventory', d: 'If you also selected MONTHS_OF_SUPPLY: run a correlation between that and the sale-to-list gap. Low supply should correlate with homes selling above ask.' },
+      { s: 'Chart the boom and the reversal', d: 'Plot year-over-year price growth monthly. Look for the peak, then the deceleration, then any negative readings. That arc is your story\'s structure.' },
+      { s: 'Use price drops as an early warning', d: 'Chart PRICE_DROPS alongside price growth. Price drops typically rise 2–3 months before closed prices soften. Check whether that pattern holds in your data — it makes for a compelling predictive angle.' },
+      { s: 'Compare markets by boom intensity', d: 'Which states had the highest peak YoY growth? Rank them. Then check whether those same states now have the most price drops. The correlation between boom intensity and correction severity is the key finding.' },
     ],
     narratives: [
-      { type: 'The gap', how: 'The gap between list and sale price is the story of who has power. When it closes (or flips), that\'s a power transfer worth writing about.' },
-      { type: 'Cause and effect', how: 'Connect the gap to inventory levels. Less supply → more competition → homes sell above ask. Show this relationship directly.' },
-    ],
-  },
-
-  // ── PRICE PER SQFT ─────────────────────────────────────────────────────
-  {
-    group: 'Price per square foot',
-    needs: ['MEDIAN_PPSF'],
-    q: 'How does the cost per square foot vary across states, and which markets are overpriced relative to their region?',
-    analytics: [
-      { s: 'Rank states by average PPSF', d: 'Group by STATE_CODE, calculate mean MEDIAN_PPSF, sort descending. This is your "most expensive space" ranking.' },
-      { s: 'Look for outliers', d: 'Calculate mean and standard deviation across all states. States more than 1.5 standard deviations above the mean are statistical outliers — that\'s your story.' },
-      { s: 'Run a regression of PPSF on time', d: 'For each state separately, regress PPSF on month number. States with steep slopes are appreciating fastest.' },
-      { s: 'Compare list PPSF vs sale PPSF', d: 'If you selected MEDIAN_LIST_PPSF: the difference shows whether sellers are pricing ahead of or behind the market.' },
-    ],
-    narratives: [
-      { type: 'Comparison', how: 'Pick two states at opposite ends of your PPSF ranking and build a side-by-side portrait of what that price difference means for a real buyer.' },
-      { type: 'Outlier', how: 'Identify the state that defies the regional trend — high PPSF in a low-cost area, or low PPSF in a high-cost area. That exception is your lead.' },
-    ],
-  },
-
-  // ── INVENTORY & SUPPLY ─────────────────────────────────────────────────
-  {
-    group: 'Inventory & supply',
-    needs: ['INVENTORY'],
-    q: 'Is the number of homes available for sale recovering, or is the market still undersupplied?',
-    analytics: [
-      { s: 'Chart inventory over time', d: 'Line chart of INVENTORY monthly. Look for the drop in 2020-2021 and whether it has rebounded.' },
-      { s: 'Compare to a pre-pandemic baseline', d: 'Calculate the average inventory for 2017-2019. Express each subsequent month as a percentage of that baseline: (current / baseline) × 100. Anything below 100 means fewer homes than normal.' },
-      { s: 'Trend test', d: 'For the period after the drop, run a linear regression of inventory on time. A positive slope means the market is slowly recovering supply.' },
-    ],
-    narratives: [
-      { type: 'Change over time', how: 'Show the before, the collapse, and the recovery (or lack of one). Use the baseline comparison to make the scale of the shortage clear to readers.' },
-      { type: 'Magnitude', how: 'Convert the shortage into homes: "The market is short approximately X homes compared to normal." That turns an abstract number into something tangible.' },
+      { type: 'The arc', how: 'Structure this as a three-act story: the surge, the peak, and what comes next. Even if you can\'t call the ending yet, the shape of the arc is clear enough to write about.' },
+      { type: 'The exception', how: 'Find the market that boomed hard but hasn\'t corrected, or one that barely boomed but is now seeing drops. Exceptions reveal what\'s really driving the story beneath the surface.' },
+      { type: 'The forecast', how: 'If price drops reliably lead closed prices by a few months, you can make a conditional projection: "Based on current price reduction rates, expect closed prices to follow in the next quarter." State it as analysis, not prediction.' },
     ],
   },
 
   {
-    group: 'Inventory & supply',
-    needs: ['MONTHS_OF_SUPPLY'],
-    q: 'Is this a buyer\'s market, a seller\'s market, or somewhere in between?',
+    group: 'The boom and its aftermath',
+    theme: 'red',
+    needs: ['PRICE_DROPS', 'PRICE_DROPS_YOY', 'STATE_CODE'],
+    q: 'Which markets overshot during the boom and are now correcting the fastest?',
+    angle: 'Not all corrections are equal. Some markets are returning to earth gently; others are in freefall.',
     analytics: [
-      { s: 'Chart months of supply with benchmark lines', d: 'Plot MONTHS_OF_SUPPLY over time. Add horizontal reference lines at 3 months (seller\'s market) and 6 months (buyer\'s market). The gap tells the whole story visually.' },
-      { s: 'Calculate time in each zone', d: 'Count the months where supply was below 3, between 3-6, and above 6. What share of your time range was each market type?' },
-      { s: 'Regression on time (recent period)', d: 'For the last 2 years, regress MONTHS_OF_SUPPLY on time. Is it trending toward balance (slope positive toward 6) or tightening again?' },
-      { s: 'Correlation with price', d: 'If you also have MEDIAN_SALE_PRICE_YOY: run a correlation with MONTHS_OF_SUPPLY. Negative correlation expected — lower supply should correspond with faster price growth.' },
+      { s: 'Rank states by current price drop rate', d: 'Group by state, compute average PRICE_DROPS for the most recent 6 months, rank descending. The top 5–10 are your most-correcting markets.' },
+      { s: 'Measure the direction of change', d: 'For each state, is PRICE_DROPS_YOY positive (more drops than a year ago, correction accelerating) or negative (fewer drops, correction slowing)? This tells you where you are in the cycle.' },
+      { s: 'Check for outliers statistically', d: 'Calculate the national average and standard deviation of price drop rates. States more than 1.5 standard deviations above average are genuine outliers — worth explaining specifically.' },
     ],
     narratives: [
-      { type: 'The gap', how: 'Frame the story around the distance between where the market is and where balanced looks like. Closing that gap — or widening it — is the narrative.' },
-      { type: 'Change over time', how: 'Show when the market tipped into seller territory, how deep it went, and whether it is returning to balance.' },
+      { type: 'Winners and losers', how: 'Some markets overbuilt or attracted speculative buyers. Those are your losers in this story. Others had structural demand that insulated them. Show both sides.' },
+      { type: 'The hidden story', how: 'The headline often says "housing market cools." Your story can go deeper: cooling is not uniform, and the markets that look stable in the aggregate may be masking sharp local corrections.' },
     ],
   },
 
   {
-    group: 'Inventory & supply',
-    needs: ['NEW_LISTINGS'],
-    q: 'Are new homes coming to market, or are sellers staying put?',
+    group: 'Supply shortage',
+    theme: 'blue',
+    needs: ['INVENTORY', 'MONTHS_OF_SUPPLY', 'NEW_LISTINGS'],
+    q: 'Why are there so few homes for sale — and when will that change?',
+    angle: 'Inventory hit historic lows not because demand exploded, but because sellers stopped selling. That\'s a fundamentally different kind of shortage.',
     analytics: [
-      { s: 'Seasonal adjustment using YoY', d: 'New listings are highly seasonal. Use NEW_LISTINGS_YOY to compare each month to the same month a year ago — this removes the seasonal pattern.' },
-      { s: 'Build a listing index', d: 'Set the 2019 monthly average = 100. Express each month as a percentage of that. Any reading below 100 means fewer listings than before the pandemic.' },
-      { s: 'Test whether spring 2023 and 2024 showed recovery', d: 'Spring is the peak listing season. Run a t-test comparing spring (March-May) new listings in 2019 vs. 2023 vs. 2024 to see if the seasonal bounce is recovering.' },
+      { s: 'Show the scale of the shortage', d: 'Compare current inventory to your 2017–2019 average. Express it simply: "There are X% fewer homes available today than was normal before the pandemic." That single number anchors everything.' },
+      { s: 'Separate new supply from total supply', d: 'Chart both new listings and total inventory. New listings falling faster than inventory means the shortage is getting worse at the source, not just as accumulated tightness.' },
+      { s: 'Find the trend', d: 'For the last 12–18 months, fit a trend line to new listings. Is the slope positive (sellers returning) or flat/negative (still locked in)? That slope is your forecast for whether things improve.' },
     ],
     narratives: [
-      { type: 'Cause and effect', how: 'The main story here is the "lock-in effect": sellers who refinanced at low rates don\'t want to trade up into higher rates, so they stay. The listing data is the evidence.' },
-      { type: 'Change over time', how: 'Show the pandemic collapse in listings and whether the trend since has been flat, recovering, or still falling.' },
-    ],
-  },
-
-  // ── MARKET SPEED ──────────────────────────────────────────────────────
-  {
-    group: 'Market speed',
-    needs: ['MEDIAN_DOM'],
-    q: 'How long are homes sitting on the market, and has buyer urgency returned to normal?',
-    analytics: [
-      { s: 'Chart median days on market over time', d: 'Line chart of MEDIAN_DOM. Lower = faster = more competitive. Look for the 2021-2022 low and any subsequent rise.' },
-      { s: 'Compare to 2019 baseline', d: 'Calculate average DOM for 2019. Is the current DOM above, below, or back to that level? Express as: "X days faster/slower than normal."' },
-      { s: 'Run a linear regression on recent data', d: 'For the last 18-24 months, regress DOM on time. Positive slope = homes sitting longer (cooling). Negative slope = market speeding back up.' },
-      { s: 'Compare across states', d: 'If you have multiple states: rank by average DOM and test whether the differences between states are significant using a one-way ANOVA.' },
-    ],
-    narratives: [
-      { type: 'Change over time', how: 'Frame this as a story of urgency: how long did buyers have to make a decision at the market\'s fastest, and how long do they have today?' },
-      { type: 'Comparison', how: 'Compare the fastest and slowest markets in your data. The contrast between a 7-day market and a 60-day market tells a vivid story about where demand is concentrated.' },
+      { type: 'The cause and the effect', how: 'Lead with the cause — sellers who refinanced at 2.5–3% don\'t want to trade into a 7% mortgage. Then show the effect: inventory at record lows. Don\'t just describe the shortage; explain why it exists.' },
+      { type: 'The forecast', how: 'If new listings are rising slowly, supply will eventually recover. When? Use the trend line slope to estimate how many months before inventory returns to pre-pandemic levels. A data-grounded estimate is far more valuable than "eventually."' },
     ],
   },
 
   {
-    group: 'Market speed',
-    needs: ['OFF_MARKET_IN_TWO_WEEKS'],
-    q: 'What share of homes are going under contract within two weeks, and what does that tell us about demand?',
+    group: 'Supply shortage',
+    theme: 'blue',
+    needs: ['MONTHS_OF_SUPPLY', 'MEDIAN_SALE_PRICE'],
+    q: 'Is tight supply the main reason prices haven\'t fallen, even as demand has slowed?',
+    angle: 'Demand fell sharply in 2022, but prices barely moved in many markets. Supply is probably why.',
     analytics: [
-      { s: 'Chart the series over time', d: 'Line chart of OFF_MARKET_IN_TWO_WEEKS. Above 50% means more than half of homes are snapped up in under 14 days — extremely competitive.' },
-      { s: 'Correlation with price growth', d: 'Run a correlation between OFF_MARKET_IN_TWO_WEEKS and MEDIAN_SALE_PRICE_YOY (if selected). High off-market rate should predict stronger price growth.' },
-      { s: 'State comparison', d: 'If multiple states are selected: rank by this metric and test statistical differences using ANOVA. Which states are consistently fast?' },
+      { s: 'Show the paradox first', d: 'Chart homes sold (demand) and median price on the same axis with different scales. If they diverged — demand collapsed while prices held — that gap is your opening.' },
+      { s: 'Test the supply-price relationship', d: 'Run a correlation between months of supply and median price across your data. A strong negative correlation (low supply = high prices) is the statistical evidence for your argument. Report the correlation coefficient.' },
+      { s: 'Find where supply tightened most', d: 'Rank states by change in months of supply from pre-pandemic to now. States where supply tightened most should show the strongest price resilience. Test whether that holds.' },
     ],
     narratives: [
-      { type: 'Magnitude', how: '"In [peak month], more than half of all homes in [state] went under contract before most buyers had even scheduled a showing." That statistic captures what the market felt like.' },
-      { type: 'Cause and effect', how: 'Connect high off-market rates to low inventory and multiple offers. Show the chain: low supply → fast sales → upward price pressure.' },
+      { type: 'The paradox', how: 'The most interesting housing story of 2022–2024 is that demand fell but prices didn\'t. Open with that tension, then resolve it: supply is so tight that even reduced demand keeps a floor under prices.' },
+      { type: 'The evidence', how: 'Present the correlation result directly: "In our data, each additional month of supply is associated with prices X dollars lower, all else equal." That\'s a concrete, defensible claim.' },
     ],
   },
 
   {
-    group: 'Market speed',
-    needs: ['AVG_SALE_TO_LIST'],
-    q: 'Are buyers offering over asking price, and has that behavior changed with higher interest rates?',
+    group: 'Market heat',
+    theme: 'pink',
+    needs: ['MEDIAN_DOM', 'SOLD_ABOVE_LIST', 'OFF_MARKET_IN_TWO_WEEKS'],
+    q: 'Is the frenzied seller\'s market finally cooling — or are buyers still in a race?',
+    angle: 'At its peak, the average home sold in under two weeks and went above asking. That urgency defined the market. Has it left?',
     analytics: [
-      { s: 'Chart the ratio over time', d: 'Values above 1.00 mean overbidding. Below 1.00 means discounting. Find when the ratio crossed each threshold.' },
-      { s: 'Test whether rate hikes changed buyer behavior', d: 'Split the data into pre-rate-hike (before March 2022) and post-rate-hike. Run a t-test on AVG_SALE_TO_LIST between the two periods. A significant result confirms the behavioral shift.' },
-      { s: 'Regression: rate proxy', d: 'If you have data across multiple years, use time as a proxy for rates (rates rose sharply in 2022). Regress AVG_SALE_TO_LIST on time for 2022-2024 to estimate the monthly decline in overbidding.' },
+      { s: 'Build a market heat picture', d: 'Look at three signals together: days on market, share sold above list, and share off market in two weeks. When all three move in the same direction, the signal is real. When they diverge, dig into why.' },
+      { s: 'Compare peak to present', d: 'For each metric, find the peak value and the most recent value. Express the change as a percentage. "Days on market rose from 8 to 34" is more vivid than any chart.' },
+      { s: 'Find where it\'s still hot', d: 'Even in a cooling national market, some states stay competitive. Rank states by current days on market. Test whether the differences across states are statistically significant (ANOVA). Name the outliers.' },
     ],
     narratives: [
-      { type: 'Cause and effect', how: 'Rate hikes are the cause; falling overbidding is the effect. Show that relationship clearly with a before/after comparison.' },
-      { type: 'The turning point', how: 'The month the ratio crossed back below 1.00 is the moment the seller\'s market ended in your chosen area. Build the story around that crossover.' },
+      { type: 'Before and after', how: 'Contrast the experience of a buyer in 2021 (7 days to decide, waive inspection, offer 10% over ask) with a buyer today. Data supports the contrast; vivid detail makes it stick.' },
+      { type: 'The exception', how: 'Identify the market that is still behaving like 2021. Explain why — limited land, job growth, migration. The exception proves the rule and gives readers a specific place to look.' },
     ],
   },
 
   {
-    group: 'Market speed',
-    needs: ['SOLD_ABOVE_LIST'],
-    q: 'In how many sales did buyers actually pay more than the asking price, and where is this still happening?',
+    group: 'Market heat',
+    theme: 'pink',
+    needs: ['MEDIAN_DOM', 'MEDIAN_DOM_YOY'],
+    q: 'How much longer are homes sitting on the market today compared to a year ago?',
+    angle: 'Days on market is the simplest measure of buyer urgency. When it doubles, the market has fundamentally changed.',
     analytics: [
-      { s: 'Chart as a percentage over time', d: 'SOLD_ABOVE_LIST is the share of homes that closed above list price. Chart it monthly to see the surge and retreat.' },
-      { s: 'Geographic comparison', d: 'If multiple states: rank by average SOLD_ABOVE_LIST for a given year. Conduct a one-way ANOVA to confirm that differences across states are significant, not just noise.' },
-      { s: 'Pearson correlation with inventory', d: 'Correlate SOLD_ABOVE_LIST with MONTHS_OF_SUPPLY. The expected result (negative correlation) would confirm that tight supply drives overbidding.' },
+      { s: 'Chart the trend simply', d: 'A line chart of median days on market over time is self-explanatory to any audience. Make sure your axis starts at zero so the change looks proportional, not exaggerated.' },
+      { s: 'Quantify the shift', d: 'Compare the median DOM in your peak-competition year to the most recent year. Express it in plain terms: "Buyers now have X more days to make a decision than they did in 2022."' },
+      { s: 'Check whether the trend is continuing', d: 'Is DOM_YOY still rising (market still cooling) or has it stabilised (new equilibrium found)? Fit a trend line to the last 12 months. A flat slope means the cooling has levelled off.' },
     ],
     narratives: [
-      { type: 'Comparison', how: 'Compare peak overbidding (2021-2022) with today. The contrast — 60% of homes sold above list vs. 25% today — tells the reader exactly how much the market has cooled.' },
-      { type: 'Where it is still happening', how: 'Even as the national picture cools, some markets still have high overbidding rates. Identifying those exceptions is your most newsworthy angle.' },
-    ],
-  },
-
-  // ── PRICE DROPS ───────────────────────────────────────────────────────
-  {
-    group: 'Price drops & corrections',
-    needs: ['PRICE_DROPS'],
-    q: 'What share of sellers are cutting their asking prices, and does that predict where prices will fall next?',
-    analytics: [
-      { s: 'Chart PRICE_DROPS over time', d: 'Rising price-drop rates signal that sellers are ahead of the market. This is one of the best early-warning indicators.' },
-      { s: 'Lead-lag analysis', d: 'Shift the PRICE_DROPS series forward by 2 and 3 months, then correlate it with MEDIAN_SALE_PRICE_YOY. A strong correlation at a 2-3 month lag confirms that drops predict price declines.' },
-      { s: 'Rank states by drop rate', d: 'Group by STATE_CODE and average PRICE_DROPS. Sort descending to find where sellers are most out of step with buyers.' },
-      { s: 'Test the relationship statistically', d: 'Regress MEDIAN_SALE_PRICE_YOY (dependent) on lagged PRICE_DROPS (independent). A significant negative coefficient confirms that more drops today predict slower prices tomorrow.' },
-    ],
-    narratives: [
-      { type: 'Leading indicator', how: 'Frame price drops as a warning signal: "When sellers start cutting prices, closed-sale prices usually follow a few months later." Show the lag in your data to support that claim.' },
-      { type: 'Outlier', how: 'Identify the state where price drops are highest. That is either the most overpriced market or the most interest-rate sensitive — either way it is your most compelling example.' },
-    ],
-  },
-
-  // ── VOLUME & DEMAND ───────────────────────────────────────────────────
-  {
-    group: 'Sales volume',
-    needs: ['HOMES_SOLD'],
-    q: 'How much has the number of sales fallen, and does low volume mean the market is broken or just slow?',
-    analytics: [
-      { s: 'Index to 2019 baseline', d: 'Set 2019 average monthly sales = 100 per state. Every subsequent month becomes an index. Readings below 70 indicate very depressed activity.' },
-      { s: 'Regression on time (post-2022)', d: 'Regress HOMES_SOLD on time starting from mid-2022. Is volume stabilising (near-zero slope) or still declining (negative slope)?' },
-      { s: 'Correlation with price YoY', d: 'Run a correlation between HOMES_SOLD and MEDIAN_SALE_PRICE_YOY. Volume and price don\'t always move together — documenting their divergence is part of the story.' },
-    ],
-    narratives: [
-      { type: 'Change over time', how: 'Show the volume collapse clearly and put it in historical context. What was the last time this few homes changed hands? That comparison anchors the story.' },
-      { type: 'Two things that should move together but don\'t', how: 'Volume collapsed while prices remained elevated — that\'s the paradox of the 2022-2024 market. Explaining why (sellers won\'t budge, buyers can\'t afford to bid up) is the story.' },
+      { type: 'Change over time', how: 'The simplest framing: homes used to sell in a week; now they sit for a month. Show when the transition happened and how fast it occurred. The speed of the change is as interesting as the magnitude.' },
+      { type: 'What it means for buyers and sellers', how: 'More days on market benefits buyers (time to inspect, negotiate, shop) and pressures sellers (carrying costs, price reductions). Translate the data into what it means for each side.' },
     ],
   },
 
   {
-    group: 'Sales volume',
-    needs: ['PENDING_SALES'],
-    q: 'What is the pipeline of homes under contract telling us about where sales will be in 30-60 days?',
+    group: 'Transaction collapse',
+    theme: 'coral',
+    needs: ['HOMES_SOLD', 'HOMES_SOLD_YOY', 'PENDING_SALES'],
+    q: 'Why did home sales collapse — and what does low volume tell us that prices don\'t?',
+    angle: 'Sales volume fell to its lowest level in decades. That story is largely invisible if you only look at prices.',
     analytics: [
-      { s: 'Use pending as a leading indicator', d: 'Pending sales reflect signed contracts. Closed sales follow in 30-60 days. Plot both on the same chart to visualise the lead-lag.' },
-      { s: 'Measure the lag formally', d: 'Shift PENDING_SALES forward by 1 and 2 months. Calculate correlation between shifted pending and HOMES_SOLD. The lag with the highest correlation tells you the typical contract-to-close time.' },
-      { s: 'Forecast from current reading', d: 'If PENDING_SALES_YOY is currently -10%, you can project that closed sales will likely be about 10% below last year in 1-2 months. State this as a conditional projection, not a certainty.' },
+      { s: 'Show the collapse in context', d: 'Compare annual homes sold in your peak year (likely 2021) to your lowest year. Express it as a percentage drop. Then compare that drop to any previous slowdown in your data.' },
+      { s: 'Separate supply-side from demand-side causes', d: 'If both new listings and pending sales fell at the same time, both sellers and buyers retreated. If pending fell while listings held, it was a demand problem. The direction of causality changes the story.' },
+      { s: 'Use pending sales to look ahead', d: 'Pending sales lead closed sales by 30–60 days. Calculate the correlation between this month\'s pending and next month\'s closed sales. Then apply today\'s pending reading as a soft forecast for next month.' },
     ],
     narratives: [
-      { type: 'Cause and effect', how: 'Pending sales are the cause, closed sales are the effect. Once you establish the lag, you can make a credible near-term forecast — and that is powerful in a story.' },
-      { type: 'Leading indicator', how: 'Frame it as a window into the future: "Right now, the pipeline of contracts suggests the next two months will look like X."' },
-    ],
-  },
-
-  // ── COMBINED / MULTI-VARIABLE ─────────────────────────────────────────
-  {
-    group: 'Supply and price together',
-    needs: ['INVENTORY', 'MEDIAN_SALE_PRICE'],
-    q: 'Is tight supply actually driving higher prices, and can you prove that statistically?',
-    analytics: [
-      { s: 'Scatter plot first', d: 'Plot INVENTORY on the x-axis and MEDIAN_SALE_PRICE on the y-axis, one point per month. If there is a clear downward slope (less inventory = higher prices), the relationship is visible.' },
-      { s: 'Run a simple regression', d: 'Regress MEDIAN_SALE_PRICE (dependent) on INVENTORY (independent). The coefficient tells you: for every additional home in inventory, how much does the median price change?' },
-      { s: 'Check the R² value', d: 'R² above 0.5 means inventory explains more than half the variation in prices. That is strong evidence for your argument.' },
-      { s: 'Control for time', d: 'Add a time trend variable to the regression (month number) to separate the inventory effect from the general upward trend in prices over time.' },
-    ],
-    narratives: [
-      { type: 'Cause and effect', how: 'This is the clearest cause-and-effect story in housing data. Use your regression result to make the claim concrete: "For every 1,000-home drop in inventory, the median price rose by approximately $X."' },
-      { type: 'Surprising finding', how: 'If R² is low and the relationship is weak, that is also a story: prices rose even as inventory recovered slightly, suggesting demand was the more powerful force.' },
+      { type: 'The hidden story', how: 'Prices stayed high, so headlines said the market was fine. But volume tells a different story: the market was essentially frozen. Sellers wouldn\'t drop prices; buyers couldn\'t afford to bid up. That stalemate is the real story.' },
+      { type: 'The paradox', how: 'Open with the contradiction: prices rose while sales collapsed. Resolve it by explaining the lock-in effect and supply dynamics. The resolution makes the paradox feel earned, not just confusing.' },
     ],
   },
 
   {
-    group: 'Supply and price together',
-    needs: ['MONTHS_OF_SUPPLY', 'PRICE_DROPS'],
-    q: 'As supply loosens, are sellers starting to cut prices — and how quickly does that happen?',
+    group: 'Geographic divide',
+    theme: 'amber',
+    needs: ['STATE_CODE', 'MEDIAN_SALE_PRICE'],
+    q: 'Which states are the winners and losers of the post-pandemic housing reshuffling?',
+    angle: 'Remote work triggered the largest internal migration in a generation. Some states gained; others lost. The housing data shows exactly where.',
     analytics: [
-      { s: 'Correlate the two variables', d: 'Run a Pearson correlation between MONTHS_OF_SUPPLY and PRICE_DROPS. Expected: positive correlation — more supply means more sellers cutting prices.' },
-      { s: 'Test with a lag', d: 'Does rising supply today predict more price cuts in 1-2 months? Shift MONTHS_OF_SUPPLY forward and re-run the correlation to find the lag structure.' },
-      { s: 'Segment by state', d: 'If multiple states are selected: run the correlation separately for each state. Do all markets show the same pattern, or are some more resistant to cutting prices even as supply grows?' },
+      { s: 'Rank states by price growth over your selected period', d: 'Group by state, compute total % price change from first to last year. Sort descending. The top 10 are your winners; the bottom 10 are your underperformers.' },
+      { s: 'Identify the outliers', d: 'Calculate mean and standard deviation of price growth across all states. States more than 1.5 standard deviations above average grew unusually fast — these are your migration destination markets.' },
+      { s: 'Test whether regional clusters are real', d: 'Group states into South, Northeast, Midwest, West. Compare average price growth across regions using ANOVA. A significant result confirms that geography predicts performance — not just random variation.' },
     ],
     narratives: [
-      { type: 'Cause and effect', how: 'Supply increasing is the cause; seller price concessions are the effect. Showing the lag between them gives the story a predictive dimension.' },
-      { type: 'The gap', how: 'In markets where supply is rising but price cuts aren\'t following yet, there is a gap between seller expectations and buyer reality. That tension is a story.' },
+      { type: 'Winners and losers', how: 'Name the five markets that gained the most and the five that lagged. For the winners, connect price growth to migration patterns. For the laggards, ask what held them back — was it affordability, job market, or already being expensive?' },
+      { type: 'The map is the story', how: 'If you can visualise your findings geographically (even a simple table with states grouped by region), the regional clustering will be visible. Describe that clustering explicitly in your write-up.' },
     ],
   },
 
   {
-    group: 'Market heat index',
-    needs: ['MEDIAN_DOM', 'SOLD_ABOVE_LIST', 'INVENTORY'],
-    q: 'Can you build a single "market heat" score from multiple indicators and rank markets by it?',
+    group: 'Geographic divide',
+    theme: 'amber',
+    needs: ['STATE_CODE', 'MONTHS_OF_SUPPLY', 'MEDIAN_DOM'],
+    q: 'Is America experiencing one housing market or many completely different ones?',
+    angle: 'National averages obscure dramatic local variation. A buyer in Austin and a buyer in Cleveland are living in different economic realities.',
     analytics: [
-      { s: 'Normalise each variable', d: 'For each indicator, subtract the mean and divide by the standard deviation (z-score). This puts all variables on the same scale.' },
-      { s: 'Combine into a composite', d: 'Add z-score of SOLD_ABOVE_LIST, subtract z-score of MEDIAN_DOM, subtract z-score of INVENTORY. Higher score = hotter market. Customise the weights if you have a theoretical reason to.' },
-      { s: 'Rank and compare', d: 'Calculate the composite for each state/period. Rank markets from hottest to coolest. Chart how the composite changed over time.' },
-      { s: 'Validate the composite', d: 'Run a correlation between your composite score and MEDIAN_SALE_PRICE_YOY. If the composite is a good heat index, it should correlate strongly with price growth.' },
+      { s: 'Calculate the spread', d: 'For your chosen time period, find the range between the most and least competitive state on each metric. A wide range means the national average is meaningless — and that\'s your story.' },
+      { s: 'Find the most divergent states', d: 'Identify pairs of states at opposite extremes — fastest market vs. slowest, tightest supply vs. most plentiful. The contrast between two real places is always more compelling than an average.' },
+      { s: 'Test whether the divergence grew over time', d: 'Calculate the standard deviation of state-level metrics for each year in your dataset. If the standard deviation is rising over time, markets are diverging — becoming more different, not more similar.' },
     ],
     narratives: [
-      { type: 'Comparison', how: 'A composite score lets you make direct comparisons: "Florida was 1.8 standard deviations hotter than the national average in 2021." That is more precise than saying "very hot."' },
-      { type: 'Change over time', how: 'Chart the composite for 3-4 states over time. You can show clearly when each market peaked and how quickly each cooled — all in one chart.' },
+      { type: 'The contrast', how: 'Pick two real states at opposite extremes and describe what buying a home feels like in each one. Use the data as the foundation, but make the contrast concrete and human.' },
+      { type: 'The divergence is the story', how: 'If markets are becoming more different over time, that trend matters more than any snapshot. Frame the story as: "The country\'s housing markets are splitting apart — and here\'s the evidence."' },
     ],
   },
 
   {
-    group: 'Demand signals',
-    needs: ['PENDING_SALES', 'MEDIAN_SALE_PRICE'],
-    q: 'Do changes in buyer demand (pending sales) reliably predict where prices go next?',
+    group: 'Recovery and new normal',
+    theme: 'green',
+    needs: ['MEDIAN_DOM', 'MONTHS_OF_SUPPLY', 'AVG_SALE_TO_LIST'],
+    q: 'Is the housing market returning to normal — or is this the new normal?',
+    angle: 'Every data point is compared to 2019. But what if the pre-pandemic market wasn\'t normal either? And what does a healthy market actually look like?',
     analytics: [
-      { s: 'Lead-lag regression', d: 'Regress MEDIAN_SALE_PRICE_YOY on PENDING_SALES_YOY lagged by 1, 2, and 3 months. The lag with the highest R² tells you how far ahead pending sales predict prices.' },
-      { s: 'Granger causality test', d: 'If you are using R or Python: a Granger causality test formally tests whether past values of PENDING_SALES help predict MEDIAN_SALE_PRICE better than price alone. This is the gold-standard for a "leading indicator" claim.' },
-      { s: 'Simple correlation at multiple lags', d: 'Even without the formal test: calculate and chart the correlation at lags 0, 1, 2, 3 months. Peak correlation at lag 2 means pending sales leads prices by 2 months.' },
+      { s: 'Define normal first', d: 'Calculate the 2017–2019 average for each of your selected metrics. That is your baseline. Then chart how far each metric currently sits from that baseline — above, below, or back to it.' },
+      { s: 'Measure the recovery rate', d: 'For each metric, how far has it recovered from its pandemic extreme back toward the 2017–2019 baseline? Express it as a percentage of the way back. "DOM is 60% of the way back to pre-pandemic normal" is a precise, useful statement.' },
+      { s: 'Check whether recovery is consistent', d: 'Are all metrics recovering at the same pace, or are some back to normal while others are still far off? Inconsistency across metrics is often the most interesting finding.' },
     ],
     narratives: [
-      { type: 'Leading indicator', how: 'If the lead-lag holds, you have a genuine predictive finding. Frame it as: "In this market, when pending sales fall, prices follow roughly X months later — and pending sales are falling right now."' },
-      { type: 'Surprising finding', how: 'If the lead-lag is weak or inconsistent, that is also interesting: prices are being set by something other than transaction volume. Explore what else might explain it (rate environment, investor activity, etc.).' },
+      { type: 'The benchmark matters', how: 'Start by making readers question what "normal" even means. Pre-2020 wasn\'t a golden era — affordability was already strained in many markets. The real question is what equilibrium the market is settling toward.' },
+      { type: 'Partial recovery', how: 'The most honest story is usually a partial one: some things have normalised (competition, overbidding) while others remain off (inventory, affordability). Show what has recovered and what hasn\'t in the same story.' },
     ],
   },
 
   {
-    group: 'Geographic patterns',
-    needs: ['STATE_CODE'],
-    q: 'Which states are outliers — performing very differently from the regional or national average?',
+    group: 'Recovery and new normal',
+    theme: 'green',
+    needs: ['PENDING_SALES', 'MEDIAN_SALE_PRICE', 'HOMES_SOLD'],
+    q: 'What are the leading signals telling us about where the housing market is heading in the next few months?',
+    angle: 'Housing data has built-in time lags. Pending sales, price drops, and new listings are windows into the future if you know how to read them.',
     analytics: [
-      { s: 'Calculate state averages', d: 'Group by STATE_CODE and compute the mean for all your selected numeric variables. This gives you one row per state to work with.' },
-      { s: 'Identify outliers statistically', d: 'For each variable, calculate the national mean and standard deviation. Flag any state more than 1.5 standard deviations above or below the mean as an outlier.' },
-      { s: 'Cluster analysis (optional)', d: 'If you have enough variables: run a k-means cluster (k=3 or 4) to group states by their overall market profile. Cheap-slow vs. expensive-fast vs. correcting are typical clusters.' },
-      { s: 'ANOVA across regions', d: 'Group states into regions (South, Northeast, Midwest, West). Run a one-way ANOVA to test whether regional differences in your key metric are statistically significant.' },
+      { s: 'Establish the lead-lag relationship', d: 'Compare pending sales to closed sales with a 1–2 month offset. Calculate the correlation at each lag. The lag with the highest correlation is how far ahead pending sales predict closed volume.' },
+      { s: 'Apply it as a forecast', d: 'Take the most recent reading of your leading indicator and apply the relationship you found: "If this pattern holds, closed sales next month should be approximately X." Present this as a data-based estimate, not a guarantee.' },
+      { s: 'Check for any breaking of the pattern', d: 'Are there periods where the lead-lag relationship broke down? Identifying when the relationship held and when it didn\'t is more sophisticated — and more honest — than assuming it always holds.' },
     ],
     narratives: [
-      { type: 'Outlier', how: 'Lead with the state that defies the pattern. Why is this market different? Is it structural (job market, geography, policy) or cyclical (overbuilt in the boom, correcting now)?' },
-      { type: 'Comparison', how: 'Pick the extreme cases — the most and least expensive, fastest and slowest — and tell them as a contrast story. The gap between them is the real finding.' },
-    ],
-  },
-
-  {
-    group: 'Geographic patterns',
-    needs: ['CITY', 'REGION', 'PARENT_METRO_REGION'],
-    q: 'How do housing markets within the same state vary by city or metro area?',
-    analytics: [
-      { s: 'Group by metro or city', d: 'Aggregate by PARENT_METRO_REGION or CITY. Calculate mean values for your selected metrics within each metro.' },
-      { s: 'Within-state variance', d: 'Calculate the standard deviation of prices (or DOM or supply) across metros within each state. A high standard deviation means the state is not uniform — urban/suburban/rural markets are diverging.' },
-      { s: 'Rank metros within each state', d: 'For each state, rank metros by price, speed, and supply. Identify which metros are driving the state average up or down.' },
-    ],
-    narratives: [
-      { type: 'Zooming in', how: 'Start at the state level, then zoom into the city level to show that state averages hide a lot of variation. The suburb vs. urban divide is often the most interesting local story.' },
-      { type: 'Outlier', how: 'Find the metro that is completely unlike its state. A fast-cooling market in an otherwise hot state — or a resilient pocket in a state that is declining broadly — is your best angle.' },
-    ],
-  },
-
-  {
-    group: 'Property type differences',
-    needs: ['PROPERTY_TYPE'],
-    q: 'Do single-family homes, condos, and townhouses behave differently in the same market?',
-    analytics: [
-      { s: 'Filter and compare side-by-side', d: 'For each property type in your selected area and time range, compute the same metrics. Build a comparison table: type | avg price | avg DOM | avg months of supply.' },
-      { s: 'T-test between types', d: 'Pick your key variable (e.g., MEDIAN_SALE_PRICE). Run a two-sample t-test between Single Family and Condo/Co-op. A significant result means the types are genuinely different, not just noisy samples.' },
-      { s: 'Chart price trends by type', d: 'Multi-line chart with one line per property type. Did condos peak and fall before single-family? Did they recover faster or slower?' },
-    ],
-    narratives: [
-      { type: 'Comparison', how: 'Property type differences are often counterintuitive. If condos recovered faster than single-family in your data, explain why — urban return, investor activity, relative affordability.' },
-      { type: 'Two things that should move together but don\'t', how: 'When condo and single-family markets diverge sharply, it is usually a signal of something structural changing in who is buying, where, and why.' },
-    ],
-  },
-
-  {
-    group: 'Time period comparison',
-    needs: ['PERIOD_BEGIN'],
-    q: 'What does comparing the same months across different years reveal about how the market has changed?',
-    analytics: [
-      { s: 'Extract year and month', d: 'From PERIOD_BEGIN, create separate year and month columns. This lets you group by month across years (all Januarys, all Julys, etc.).' },
-      { s: 'Year-over-year panel comparison', d: 'For each month of the year, plot the value across multiple years as grouped bars. This reveals whether 2024 spring was stronger or weaker than 2023 spring.' },
-      { s: 'Test for seasonal effects', d: 'Run a regression of your key variable on month dummies (January = 1 if January, 0 otherwise, etc.). Significant coefficients confirm that the market has predictable seasonal patterns.' },
-    ],
-    narratives: [
-      { type: 'Change over time', how: 'Year-over-year comparisons at the same calendar month eliminate seasonal noise. Use this to show a clean before/after: "Last June, the market looked like X. This June it looks like Y."' },
-      { type: 'The turning point', how: 'Identify the specific month and year when the market shifted gears. That moment anchors the whole narrative.' },
+      { type: 'The forecast', how: 'Readers want to know what comes next. If your data supports a near-term projection, lead with it. Then show the evidence: the lead-lag correlation, the current reading, and the conditions under which the projection would hold.' },
+      { type: 'The uncertainty is the story', how: 'Sometimes the most honest conclusion is that the signals are mixed. Pending sales up but price drops also up — what does that mean? Walking readers through conflicting signals and what they might mean is itself a valuable analysis.' },
     ],
   },
 
 ];
 
-// ── ramp colours ─────────────────────────────────────────────────────────
 const RC={teal:'#1D9E75',purple:'#7F77DD',blue:'#378ADD',coral:'#D85A30',
   amber:'#BA7517',green:'#639922',pink:'#D4537E',red:'#E24B4A',gray:'#888780'};
 
 function renderGuide(){
   const body=g('guide-body'),sub=g('guide-sub'),cnt=g('guide-count');
   if(SC.size===0){
-    body.innerHTML='<div class="guide-empty">&#8593; Select some variables in Step 01 to see relevant research questions</div>';
-    sub.textContent='Select variables in Step 01 — questions matched to your selection will appear here.';
+    body.innerHTML='<div class="guide-empty">&#8593; Select variables in Step 01 to see story questions</div>';
+    sub.textContent='Select variables above — story questions matched to your selection appear here.';
     cnt.textContent='';return;
   }
-  const matched=QUESTIONS.filter(function(q){
-    return q.needs.some(function(id){return SC.has(id);});
-  }).map(function(q){
-    return {q:q,score:q.needs.filter(function(id){return SC.has(id);}).length};
-  });
-  matched.sort(function(a,b){return b.score-a.score;});
+  const matched=QUESTIONS
+    .filter(function(q){return q.needs.some(function(id){return SC.has(id);});})
+    .map(function(q){return {q:q,score:q.needs.filter(function(id){return SC.has(id);}).length};})
+    .sort(function(a,b){return b.score-a.score;});
+
   if(matched.length===0){
-    body.innerHTML='<div class="guide-empty">No questions match yet. Try adding price, inventory, or speed variables.</div>';
-    sub.textContent='No matches.';cnt.textContent='';return;
+    body.innerHTML='<div class="guide-empty">No story questions match yet. Try selecting price, inventory, or speed variables.</div>';
+    sub.textContent='No matches yet.';cnt.textContent='';return;
   }
-  sub.textContent=matched.length+' question'+(matched.length!==1?'s':'')+' matched — click any question to expand analytics and story guidance.';
+
+  sub.textContent=matched.length+' question'+(matched.length!==1?'s':'')+' matched. Click to expand analytics and story guidance.';
   cnt.textContent=matched.length+' matched';
 
-  // group by group label
   const groups={};
   matched.forEach(function(x){
-    const gl=x.q.group;if(!groups[gl])groups[gl]=[];groups[gl].push(x);
+    if(!groups[x.q.group])groups[x.q.group]=[];
+    groups[x.q.group].push(x);
   });
 
   let out='';
   Object.keys(groups).forEach(function(gname){
     const items=groups[gname];
     const theme=items[0].q.theme||'gray';
-    const bar='<div class="gbar" style="background:'+RC[theme]+'"></div>';
-    out+='<div class="qgroup"><div class="qgroup-hdr">'+bar+gname+'</div>';
+    out+='<div class="qgroup">';
+    out+='<div class="qgroup-lbl"><div class="gb" style="background:'+RC[theme]+'"></div>'+gname+'</div>';
     items.forEach(function(item,idx){
-      const q=item.q,sc=item.score,tot=q.needs.length;
-      const qid='q-'+gname.replace(/\W/g,'_')+'-'+idx;
-      out+='<div class="qrow" id="'+qid+'" onclick="toggleQ(\''+qid+'\')">';
-      out+='<div class="qtrigger">';
-      out+='<span class="qarrow">&#9654;</span>';
-      out+='<span class="qtext">'+q.q+'</span>';
-      out+='<span class="qmatch">'+sc+'/'+tot+' vars</span>';
-      out+='</div>';
-      // expanded panels
+      const q=item.q;
+      const qid='q'+gname.replace(/\W/g,'')+''+idx;
+      out+='<div class="qrow" id="'+qid+'">';
+      out+='<div class="qtrig" onclick="toggleQ(\''+qid+'\')">';
+      out+='<span class="qarr">&#9654;</span>';
+      out+='<div class="qmain">';
+      out+='<div class="qtitle">'+q.q+'</div>';
+      out+='<div class="qangle">'+q.angle+'</div>';
+      out+='<div class="qvars">Uses: '+q.needs.join(', ')+'</div>';
+      out+='</div></div>';
+      // expanded
       out+='<div class="qdrop">';
-      // analytics panel
-      out+='<div class="qpanel"><div class="qpanel-lbl">&#128200; Analytics</div><ul>';
-      q.analytics.forEach(function(a){out+='<li><b>'+a.s+'</b> — '+a.d+'</li>';});
-      out+='</ul></div>';
-      // narrative panel
-      out+='<div class="qpanel"><div class="qpanel-lbl">&#128221; Story structure</div><ul>';
+      // analytics
+      out+='<div class="qpanel"><div class="qpanel-lbl">&#128200; How to analyse it</div><ol>';
+      q.analytics.forEach(function(a){out+='<li><b>'+a.s+'.</b> '+a.d+'</li>';});
+      out+='</ol></div>';
+      // narrative
+      out+='<div class="qpanel"><div class="qpanel-lbl">&#128221; How to tell the story</div><ul>';
       q.narratives.forEach(function(n){
         out+='<li><span class="ntag">'+n.type+'</span><br>'+n.how+'</li>';
       });
       out+='</ul></div>';
-      // what to produce panel
+      // produce
       out+='<div class="qpanel"><div class="qpanel-lbl">&#9989; What to produce</div><ul>';
-      out+='<li><b>Variables needed</b> — Export with: '+q.needs.join(', ')+', PERIOD_BEGIN, STATE_CODE.</li>';
-      out+='<li><b>Minimum chart</b> — A clearly labelled line or bar chart with a one-sentence title that states the finding, not just the topic. ("Prices peaked in mid-2022 and have since fallen 8%" — not "Home prices over time.")</li>';
-      out+='<li><b>One headline number</b> — Find the single most striking statistic in your output and put it at the top of your write-up before any context or explanation.</li>';
-      out+='<li><b>Explain the mechanism</b> — Don\'t just show what happened. Explain why using the other variables in your dataset as evidence.</li>';
+      out+='<li><b>Your headline.</b> Write a one-sentence finding before you make any chart. If you can\'t state the finding in plain language, you don\'t know what the data is saying yet.</li>';
+      out+='<li><b>One key chart.</b> Choose the chart type that makes the finding undeniable — usually a line chart for trends, a bar chart for comparisons, a scatter plot for relationships.</li>';
+      out+='<li><b>The human connection.</b> Translate at least one number into something a non-expert can picture — a monthly payment, a number of years of saving, a share of households.</li>';
+      out+='<li><b>Variables to export.</b> '+q.needs.join(', ')+' plus PERIOD_BEGIN and STATE_CODE.</li>';
       out+='</ul></div>';
-      out+='</div>'; // qdrop
-      out+='</div>'; // qrow
+      out+='</div></div>';
     });
-    out+='</div>'; // qgroup
+    out+='</div>';
   });
   body.innerHTML=out;
 }
 
-function toggleQ(id){
-  const el=g(id);if(el)el.classList.toggle('open');
-}
+function toggleQ(id){const el=g(id);if(el)el.classList.toggle('open');}
 
-// hook toggles
-const _tgC=tgC; tgC=function(id){_tgC(id);renderGuide();};
-const _tgG=tgG; tgG=function(gid){_tgG(gid);renderGuide();};
-const _sA=selAll; selAll=function(){_sA();renderGuide();};
-const _cA=clrAll; clrAll=function(){_cA();renderGuide();};
-
+const _tgC=tgC;tgC=function(id){_tgC(id);renderGuide();};
+const _tgG=tgG;tgG=function(gid){_tgG(gid);renderGuide();};
+const _sA=selAll;selAll=function(){_sA();renderGuide();};
+const _cA=clrAll;clrAll=function(){_cA();renderGuide();};
 renderGuide();
-
-
-// ── auto-load from repo ───────────────────────────────────────────────────
-// Change DATA_FILE to match your CSV filename in the repo.
-// The file must be in the same folder as this HTML (repo root).
-const DATA_FILE = 'data.csv';
-
-function showUploadFallback(reason) {
-  g('auto-bar').style.display = 'none';
-  g('uz').style.display = '';
-  g('btn-upload').style.display = '';
-  g('load-sub').textContent = reason || 'No dataset file found — upload your CSV manually.';
-  const uz = g('uz');
-  uz.addEventListener('click', function(){ g('fi').click(); });
-}
-
-function onAutoLoaded(rowCount, mb, delim) {
-  g('auto-bar').style.display = 'none';
-  const ok = g('repo-ok');
-  ok.style.display = 'flex';
-  g('repo-ok-title').textContent = rowCount.toLocaleString() + ' rows loaded from ' + DATA_FILE;
-  g('repo-ok-sub').textContent = mb + ' MB \u00b7 ' + (delim === '\t' ? 'Tab' : 'Comma') + ' delimited \u00b7 Loaded automatically from the repo';
-  g('load-sub').textContent = 'Dataset loaded from the repository.';
-  g('btn-upload').style.display = '';
-  g('btn-upload').textContent = '\u21ba Reload file';
-  g('hbadge').style.display = 'flex';
-  g('btext').textContent = rowCount.toLocaleString() + ' rows';
-}
-
-function startAutoLoad() {
-  g('auto-bar').style.display = '';
-  g('load-sub').textContent = 'Loading ' + DATA_FILE + ' from repository\u2026';
-  g('auto-pbi').style.width = '5%';
-  g('auto-lbl').textContent = 'Connecting to ' + DATA_FILE + '\u2026';
-
-  // HEAD check first so we fail fast if the file isn't there
-  fetch(DATA_FILE, { method: 'HEAD' })
-    .then(function(res) {
-      if (!res.ok) throw new Error('not found');
-      const bytes = parseInt(res.headers.get('content-length') || '0');
-      const mb = bytes > 0 ? (bytes / 1024 / 1024).toFixed(0) : '?';
-      g('auto-lbl').textContent = 'Found ' + DATA_FILE + ' (' + mb + ' MB) \u2014 streaming\u2026';
-      g('auto-pbi').style.width = '10%';
-      streamFromURL(DATA_FILE, mb);
-    })
-    .catch(function() {
-      showUploadFallback('No \u2018' + DATA_FILE + '\u2019 found in this folder \u2014 upload your CSV below.');
-    });
-}
-
-function streamFromURL(url, mb) {
-  // Detect delimiter from first few KB
-  fetch(url, { headers: { Range: 'bytes=0-4095' } })
-    .then(function(r) { return r.text(); })
-    .then(function(sample) {
-      const l1 = sample.replace(/^\uFEFF/, '').split('\n')[0] || '';
-      detDelim = (l1.match(/\t/g) || []).length > (l1.match(/,/g) || []).length ? '\t' : ',';
-      parseFull(url, mb);
-    })
-    .catch(function() {
-      detDelim = ',';
-      parseFull(url, mb);
-    });
-}
-
-function parseFull(url, mb) {
-  let scanned = 0, last = 0;
-
-  Papa.parse(url, {
-    download: true,
-    header: true,
-    delimiter: detDelim,
-    skipEmptyLines: true,
-    chunkSize: 524288,
-    chunk: function(res) {
-      scanned += res.data.length;
-      const now = Date.now();
-      if (now - last > 300) {
-        last = now;
-        const pct = Math.min(90, 10 + scanned / Math.max(scanned + 5000, 1) * 80);
-        g('auto-pbi').style.width = pct + '%';
-        g('auto-lbl').textContent = scanned.toLocaleString() + ' rows read\u2026';
-      }
-    },
-    complete: function(res) {
-      const data = res.data || [];
-      if (data.length === 0) {
-        showUploadFallback('File loaded but contained no rows. Try uploading manually.');
-        return;
-      }
-      g('auto-pbi').style.width = '100%';
-      g('auto-lbl').textContent = 'Done \u2014 ' + data.length.toLocaleString() + ' rows';
-
-      // Re-use existing onParseComplete path
-      onParseComplete(data, url, mb);
-      onAutoLoaded(data.length, mb, detDelim);
-    },
-    error: function(err) {
-      showUploadFallback('Could not parse ' + DATA_FILE + ': ' + String(err.message || err));
-    }
-  });
-}
-
-// Manual upload still works as a fallback / override
-fi.addEventListener('change', function(e) {
-  if (e.target.files[0]) loadHeader(e.target.files[0]);
-});
-uz.addEventListener('click', function() { g('fi').click(); });
-uz.addEventListener('dragover', function(e) { e.preventDefault(); uz.classList.add('drag'); });
-uz.addEventListener('dragleave', function() { uz.classList.remove('drag'); });
-uz.addEventListener('drop', function(e) {
-  e.preventDefault(); uz.classList.remove('drag');
-  if (e.dataTransfer.files[0]) loadHeader(e.dataTransfer.files[0]);
-});
-
-// Kick off on page load
-startAutoLoad();
 
 </script>
 </body>
