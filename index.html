@@ -175,9 +175,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
     </div>
     <div class="cb">
       <input type="file" id="fi" accept=".csv,.tsv,.txt" style="display:none">
-      <div class="uzone" id="uz">
+      <label class="uzone" id="uz" for="fi">
         <div id="ui"><div class="uico">&#128194;</div><div class="uttl">Drop CSV here or click to browse</div><div class="uhnt">Any size &nbsp;&middot;&nbsp; Comma or tab delimited &nbsp;&middot;&nbsp; Fully offline</div></div>
-      </div>
+      </label>
     </div>
   </div>
 
@@ -362,11 +362,20 @@ document.getElementById('ex-dl').addEventListener('click',triggerDownload);
 document.getElementById('ex-cp').addEventListener('click',copyExport);
 
 const fi=g('fi'),uz=g('uz');
-uz.addEventListener('click',function(){fi.click();});
-fi.addEventListener('change',function(e){if(e.target.files[0])loadHeader(e.target.files[0]);});
+// label[for=fi] handles click natively — no JS click listener needed
+// Reset value so re-selecting the same file always fires change
+fi.addEventListener('click',function(){this.value='';});
+fi.addEventListener('change',function(e){
+  var f=e.target.files&&e.target.files[0];
+  if(f) loadHeader(f);
+});
 uz.addEventListener('dragover',function(e){e.preventDefault();uz.classList.add('drag');});
 uz.addEventListener('dragleave',function(){uz.classList.remove('drag');});
-uz.addEventListener('drop',function(e){e.preventDefault();uz.classList.remove('drag');if(e.dataTransfer.files[0])loadHeader(e.dataTransfer.files[0]);});
+uz.addEventListener('drop',function(e){
+  e.preventDefault();uz.classList.remove('drag');
+  var f=e.dataTransfer.files&&e.dataTransfer.files[0];
+  if(f) loadHeader(f);
+});
 
 function loadHeader(file){
   curFile=file;
