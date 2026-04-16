@@ -100,31 +100,103 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
 .exbox{background:var(--su);border-radius:var(--rl);width:100%;max-width:560px;display:flex;flex-direction:column;overflow:hidden;border:1px solid var(--bd)}
 .exhead{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--bd);background:var(--su2)}
 .exbody{padding:20px;display:flex;flex-direction:column;gap:14px}
+
+/* ── guidance panel ────────────────────────────────────────────────────── */
+.guide-section{margin-top:28px}
+.guide-section:first-child{margin-top:0}
+.guide-h{font-size:13px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.guide-h::before{content:'';display:block;width:3px;height:16px;border-radius:2px;flex-shrink:0}
+.guide-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+.qcard{background:var(--su2);border:1px solid var(--bd);border-radius:var(--r);padding:13px 15px;display:flex;flex-direction:column;gap:5px}
+.qcard-q{font-size:13px;font-weight:500;color:var(--tx);line-height:1.4}
+.qcard-hint{font-size:11px;color:var(--tx3);line-height:1.45}
+.qcard-cols{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.qcol{font-family:var(--mo);font-size:10px;padding:2px 6px;border-radius:4px;border:1px solid}
+.interpret{background:var(--su2);border-left:3px solid;border-radius:0 var(--r) var(--r) 0;padding:11px 14px;margin-bottom:10px}
+.interpret p{font-size:13px;color:var(--tx);line-height:1.55;margin:0}
+.interpret p+p{margin-top:6px}
+.interpret b{font-weight:600}
+.tips-list{display:flex;flex-direction:column;gap:8px}
+.tip{display:flex;gap:10px;align-items:flex-start;padding:10px 13px;background:var(--su2);border:1px solid var(--bd);border-radius:var(--r)}
+.tip-icon{font-size:16px;flex-shrink:0;line-height:1.4}
+.tip-text{font-size:13px;color:var(--tx);line-height:1.5}
+.tip-text b{font-weight:600}
 ::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:var(--su2)}::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:3px}
+
+
+/* ── dynamic guide ── */
+.guide-empty{text-align:center;padding:32px 0;color:var(--tx3);font-size:13px}
+.qgroup{margin-bottom:22px}.qgroup:last-child{margin-bottom:0}
+.qgroup-hdr{font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
+  color:var(--tx3);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.qgroup-hdr .gbar{width:3px;height:14px;border-radius:2px;flex-shrink:0}
+.qrow{border:1px solid var(--bd);border-radius:var(--r);margin-bottom:8px;overflow:hidden;
+  transition:border-color .15s}
+.qrow:last-child{margin-bottom:0}
+.qrow.open{border-color:var(--bd2)}
+.qtrigger{display:flex;align-items:center;gap:12px;padding:12px 15px;cursor:pointer;
+  background:var(--su);user-select:none;transition:background .12s}
+.qtrigger:hover{background:var(--su2)}
+.qrow.open .qtrigger{background:var(--su2)}
+.qarrow{font-size:11px;color:var(--tx3);flex-shrink:0;transition:transform .18s;line-height:1}
+.qrow.open .qarrow{transform:rotate(90deg)}
+.qtext{font-size:13px;font-weight:500;color:var(--tx);line-height:1.45;flex:1}
+.qmatch{font-family:var(--mo);font-size:10px;color:var(--tx3);flex-shrink:0;white-space:nowrap}
+.qdrop{display:none;border-top:1px solid var(--bd)}
+.qrow.open .qdrop{display:grid;grid-template-columns:1fr 1fr 1fr}
+@media(max-width:680px){.qrow.open .qdrop{grid-template-columns:1fr}}
+.qpanel{padding:14px 16px;border-right:1px solid var(--bd);background:var(--su)}
+.qpanel:last-child{border-right:none}
+.qpanel-lbl{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--tx3);margin-bottom:9px}
+.qpanel ul{padding-left:15px;margin:0;display:flex;flex-direction:column;gap:7px}
+.qpanel li{font-size:12px;color:var(--tx);line-height:1.55}
+.qpanel li b{font-weight:600}
+.ntag{display:inline-block;font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px;
+  margin-bottom:4px;background:var(--su2);border:1px solid var(--bd2);color:var(--tx2);
+  font-family:var(--mo)}
 </style>
 </head>
 <body>
 
 <div class="hdr">
   <div class="logo"><svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.5"/></svg></div>
-  <div><div class="ht">Housing Data Explorer</div><div class="hs">Set filters first &rarr; preview 500 rows &rarr; export full match by streaming</div></div>
+  <div><div class="ht">Housing Data Explorer</div><div class="hs">Filter &rarr; preview &rarr; export &mdash; Redfin US housing market dataset</div></div>
   <div id="hbadge">&#10003;&nbsp;<span id="btext"></span></div>
 </div>
 <div class="wrap">
+
+  <!-- 00 load -->
   <div class="card">
     <div class="ch"><span class="stag">STEP 00</span>
-      <div><div class="ct">Load dataset</div><div class="cs">Reads only the header row &mdash; the full file is streamed during Process and Export</div></div>
+      <div><div class="ct">Load dataset</div><div class="cs" id="load-sub">Looking for dataset in this folder&hellip;</div></div>
+      <div class="ca">
+        <button class="btn" id="btn-upload" style="display:none" onclick="document.getElementById('fi').click()">&#128194; Upload instead</button>
+      </div>
     </div>
     <div class="cb">
       <input type="file" id="fi" accept=".csv,.tsv,.txt" style="display:none">
-      <div class="uzone" id="uz">
+      <div id="auto-bar" style="display:none">
+        <div class="pbo"><div class="pbi" id="auto-pbi" style="width:0%"></div></div>
+        <div class="plbl" id="auto-lbl">Connecting&hellip;</div>
+      </div>
+      <div class="uzone" id="uz" style="display:none">
         <div id="ui"><div class="uico">&#128194;</div><div class="uttl">Drop CSV here or click to browse</div><div class="uhnt">Any size &nbsp;&middot;&nbsp; Comma or tab delimited &nbsp;&middot;&nbsp; Fully offline</div></div>
+      </div>
+      <div id="repo-ok" style="display:none;background:var(--okb);border:1px solid var(--okx);border-radius:var(--r);padding:14px 18px;display:none;align-items:center;gap:12px">
+        <span style="font-size:22px">&#9989;</span>
+        <div>
+          <div style="font-weight:600;font-size:14px;color:var(--ok)" id="repo-ok-title"></div>
+          <div style="font-size:12px;color:var(--tx2);margin-top:2px" id="repo-ok-sub"></div>
+        </div>
       </div>
     </div>
   </div>
+
+  <!-- 01 variables -->
   <div class="card" id="sv" style="display:none">
     <div class="ch"><span class="stag">STEP 01</span>
-      <div><div class="ct">Select variables</div><div class="cs">57 variables in 18 groups &mdash; numbered #01&ndash;#57. Click a group to toggle all in it.</div></div>
+      <div><div class="ct">Select variables</div><div class="cs">57 variables in 18 groups &mdash; numbered #01&ndash;#57. Click a group to toggle all.</div></div>
       <div class="ca">
         <button class="btn" id="btn-selall">Select all</button>
         <button class="btn" id="btn-clrall">Clear all</button>
@@ -133,6 +205,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
     </div>
     <div class="cb"><div class="groups" id="gg"></div></div>
   </div>
+
+  <!-- 02 states -->
   <div class="card" id="sst" style="display:none">
     <div class="ch"><span class="stag">STEP 02</span>
       <div><div class="ct">Select states</div><div class="cs">Leave all empty to include every state</div></div>
@@ -147,6 +221,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
       <div class="sgrid" id="sgrid"></div>
     </div>
   </div>
+
+  <!-- 03 years -->
   <div class="card" id="syr" style="display:none">
     <div class="ch"><span class="stag">STEP 03</span>
       <div><div class="ct">Filter by year</div><div class="cs">Drag sliders or click a year pill</div></div>
@@ -158,28 +234,49 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
       <div class="ypills" id="ypills"></div>
     </div>
   </div>
+
+  <!-- apply -->
   <div class="arow" id="sar" style="display:none">
-    <button class="gobtn" id="gobtn">&#9889; Preview dataset</button>
+    <button class="gobtn" id="gobtn">&#9889; Process dataset</button>
     <div class="ahint" id="ahint"></div>
   </div>
+
+  <!-- working -->
   <div class="card" id="sproc" style="display:none">
     <div class="ch"><span class="stag">WORKING</span>
-      <div><div class="ct" id="ptit">Streaming file&hellip;</div><div class="cs" id="psub"></div></div>
+      <div><div class="ct" id="ptit">Scanning&hellip;</div><div class="cs" id="psub"></div></div>
     </div>
     <div class="cb" style="text-align:center;padding:28px 20px">
       <div class="pbo"><div class="pbi" id="pbar" style="width:0%"></div></div>
       <div class="plbl" id="plbl">Starting&hellip;</div>
     </div>
   </div>
+
+  <!-- 04 output -->
   <div class="card" id="sout" style="display:none">
     <div class="ch"><span class="stag">STEP 04</span>
       <div><div class="ct">Preview</div><div class="cs" id="osub"></div></div>
-      <div class="ca"><button class="expbtn" id="expbtn">&#8595; Export full CSV</button></div>
+      <div class="ca"><button class="expbtn" id="expbtn">&#8595; Export CSV</button></div>
     </div>
     <div class="sbar" id="sbar"></div>
     <div class="twrap"><table class="dt"><thead id="th"></thead><tbody id="tb"></tbody></table></div>
   </div>
-</div>
+
+  <!-- 05 guidance: dynamic -->
+  <div class="card" id="sguide">
+    <div class="ch">
+      <span class="stag">GUIDE</span>
+      <div>
+        <div class="ct">Research questions</div>
+        <div class="cs" id="guide-sub">Select variables in Step 01 — questions matched to your selection will appear here.</div>
+      </div>
+      <div class="ca" id="guide-count" style="font-family:var(--mo);font-size:12px;color:var(--tx2)"></div>
+    </div>
+    <div class="cb" id="guide-body">
+      <div class="guide-empty">&#8593; Select some variables in Step 01 to see relevant research questions</div>
+    </div>
+  </div>
+</div><!-- /wrap -->
 
 <div id="exov" style="display:none">
   <div class="exbox">
@@ -199,7 +296,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
           <button class="btn" id="ex-close">Close</button>
         </div>
         <textarea id="ex-ta" readonly spellcheck="false" style="font-family:var(--mo);font-size:10px;width:100%;height:110px;margin-top:14px;padding:8px;border:1px solid var(--bd2);border-radius:var(--r);background:var(--su2);color:var(--tx);resize:none;outline:none"></textarea>
-        <div style="font-size:11px;color:var(--tx3);margin-top:4px">Click box &rarr; Ctrl+A &rarr; Ctrl+C to copy, then paste into a new .csv file</div>
+        <div style="font-size:11px;color:var(--tx3);margin-top:4px">Click box &rarr; Ctrl+A &rarr; Ctrl+C, then paste into a new .csv file</div>
       </div>
     </div>
   </div>
@@ -231,10 +328,10 @@ const GS=[
   {id:'spd',r:'amber',l:'Off-market speed',c:[{n:52,id:'OFF_MARKET_IN_TWO_WEEKS',l:'Off mkt in 2 wks'},{n:53,id:'OFF_MARKET_IN_TWO_WEEKS_MOM',l:'OM2W MoM'},{n:54,id:'OFF_MARKET_IN_TWO_WEEKS_YOY',l:'OM2W YoY'}]},
   {id:'meta',r:'gray',l:'Metadata',c:[{n:55,id:'TABLE_ID',l:'Table ID'},{n:56,id:'REGION_TYPE_ID',l:'Region type ID'},{n:57,id:'LAST_UPDATED',l:'Last updated'}]},
 ];
-const ACOLS=GS.flatMap(g=>g.c);
+const ACOLS=GS.flatMap(function(g){return g.c;});
 const CB={},GB={};
-ACOLS.forEach(c=>{CB[c.id]=c;});
-GS.forEach(g=>g.c.forEach(c=>{GB[c.id]=g;}));
+ACOLS.forEach(function(c){CB[c.id]=c;});
+GS.forEach(function(g){g.c.forEach(function(c){GB[c.id]=g;});});
 
 const dk=window.matchMedia('(prefers-color-scheme:dark)').matches;
 const RP={
@@ -263,132 +360,80 @@ function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').repl
 function si(n,l){return '<div class="si"><div class="sn">'+n+'</div><div class="sl">'+l+'</div></div>';}
 function sd(){return '<div class="sd"></div>';}
 
-// ── wire static buttons ───────────────────────────────────────────────────
-document.getElementById('btn-selall').addEventListener('click', selAll);
-document.getElementById('btn-clrall').addEventListener('click', clrAll);
-document.getElementById('btn-selst').addEventListener('click', selAllSt);
-document.getElementById('btn-clrst').addEventListener('click', clrSt);
-document.getElementById('gobtn').addEventListener('click', doProcess);
-document.getElementById('expbtn').addEventListener('click', doExport);
-document.getElementById('ymn').addEventListener('input', onYr);
-document.getElementById('ymx').addEventListener('input', onYr);
-document.getElementById('ssrch').addEventListener('input', function(){fltSt(this.value);});
-document.getElementById('ex-close').addEventListener('click', function(){hide('exov');});
-document.getElementById('ex-dl').addEventListener('click', triggerDownload);
-document.getElementById('ex-cp').addEventListener('click', copyExport);
+document.getElementById('btn-selall').addEventListener('click',selAll);
+document.getElementById('btn-clrall').addEventListener('click',clrAll);
+document.getElementById('btn-selst').addEventListener('click',selAllSt);
+document.getElementById('btn-clrst').addEventListener('click',clrSt);
+document.getElementById('gobtn').addEventListener('click',doProcess);
+document.getElementById('expbtn').addEventListener('click',doExport);
+document.getElementById('ymn').addEventListener('input',onYr);
+document.getElementById('ymx').addEventListener('input',onYr);
+document.getElementById('ssrch').addEventListener('input',function(){fltSt(this.value);});
+document.getElementById('ex-close').addEventListener('click',function(){hide('exov');});
+document.getElementById('ex-dl').addEventListener('click',triggerDownload);
+document.getElementById('ex-cp').addEventListener('click',copyExport);
 
-// ── upload ────────────────────────────────────────────────────────────────
-const fi=g('fi'), uz=g('uz');
-uz.addEventListener('click', function(){fi.click();});
-fi.addEventListener('change', function(e){if(e.target.files[0]) loadHeader(e.target.files[0]);});
-uz.addEventListener('dragover', function(e){e.preventDefault(); uz.classList.add('drag');});
-uz.addEventListener('dragleave', function(){uz.classList.remove('drag');});
-uz.addEventListener('drop', function(e){
-  e.preventDefault(); uz.classList.remove('drag');
-  if(e.dataTransfer.files[0]) loadHeader(e.dataTransfer.files[0]);
-});
+const fi=g('fi'),uz=g('uz'); // event wiring handled in auto-load section below
 
 function loadHeader(file){
   curFile=file;
   const mb=(file.size/1024/1024).toFixed(0);
-  g('ui').innerHTML='<div class="uico">&#9203;</div><div class="uttl">Reading header&hellip;</div><div class="uhnt">'+esc(file.name)+' &nbsp;&middot;&nbsp; '+mb+' MB</div>';
+  g('ui').innerHTML='<div class="uico">&#9203;</div><div class="uttl">Reading header\u2026</div><div class="uhnt">'+esc(file.name)+' \u00b7 '+mb+' MB</div>';
   const rd=new FileReader();
   rd.onload=function(e){
     const txt=(e.target.result||'').replace(/^\uFEFF/,'');
     const l1=txt.split('\n')[0]||'';
     detDelim=(l1.match(/\t/g)||[]).length>(l1.match(/,/g)||[]).length?'\t':',';
     const dlbl=detDelim==='\t'?'Tab':'Comma';
-    g('ui').innerHTML='<div class="uico">&#9989;</div><div class="uttl" style="color:var(--ok)">Ready &mdash; '+esc(file.name)+'</div><div class="uhnt">'+mb+' MB &nbsp;&middot;&nbsp; '+dlbl+' delimited &nbsp;&middot;&nbsp; Click to replace</div>';
-    g('hbadge').style.display='flex';
-    g('btext').textContent=mb+' MB';
-    buildVars(); buildStates(); buildYears(); updateHint();
+    g('ui').innerHTML='<div class="uico">&#9989;</div><div class="uttl" style="color:var(--ok)">Ready \u2014 '+esc(file.name)+'</div><div class="uhnt">'+mb+' MB \u00b7 '+dlbl+' delimited \u00b7 Click to replace</div>';
+    g('hbadge').style.display='flex';g('btext').textContent=mb+' MB';
+    buildVars();buildStates();buildYears();updateHint();
     ['sv','sst','syr','sar'].forEach(show);
   };
   rd.onerror=function(){g('ui').innerHTML='<div class="uico">&#10060;</div><div class="uttl" style="color:var(--er)">Could not read file</div>';};
   rd.readAsText(file.slice(0,4096),'UTF-8');
 }
 
-// ── variables — use DOM methods, no inline onclick ────────────────────────
 function buildVars(){
-  const container=g('gg');
-  container.innerHTML='';
+  const container=g('gg');container.innerHTML='';
   GS.forEach(function(grp){
     const r=RP[grp.r];
     const wrap=document.createElement('div');
-
-    // group header — built with DOM, no inline JS
     const head=document.createElement('div');
-    head.className='ghead';
-    head.id='gh-'+grp.id;
-    head.style.borderLeft='3px solid '+r.d;
-    head.style.paddingLeft='12px';
-    head.addEventListener('click', (function(gid){return function(){tgG(gid);};})(grp.id));
-
-    const chk=document.createElement('div');
-    chk.className='gchk'; chk.id='gck-'+grp.id;
-    chk.style.borderColor=r.d;
-
-    const lbl=document.createElement('span');
-    lbl.className='glbl'; lbl.style.color=r.t; lbl.textContent=grp.l;
-
-    const cnt=document.createElement('span');
-    cnt.className='gcnt'; cnt.id='gcn-'+grp.id; cnt.textContent='0/'+grp.c.length;
-
-    head.appendChild(chk); head.appendChild(lbl); head.appendChild(cnt);
-
-    // pills container
-    const pp=document.createElement('div');
-    pp.className='pills'; pp.id='pp-'+grp.id;
-
+    head.className='ghead';head.id='gh-'+grp.id;
+    head.style.borderLeft='3px solid '+r.d;head.style.paddingLeft='12px';
+    head.addEventListener('click',(function(gid){return function(){tgG(gid);};})(grp.id));
+    const chk=document.createElement('div');chk.className='gchk';chk.id='gck-'+grp.id;chk.style.borderColor=r.d;
+    const lbl=document.createElement('span');lbl.className='glbl';lbl.style.color=r.t;lbl.textContent=grp.l;
+    const cnt=document.createElement('span');cnt.className='gcnt';cnt.id='gcn-'+grp.id;cnt.textContent='0/'+grp.c.length;
+    head.appendChild(chk);head.appendChild(lbl);head.appendChild(cnt);
+    const pp=document.createElement('div');pp.className='pills';pp.id='pp-'+grp.id;
     grp.c.forEach(function(col){
-      const pill=document.createElement('div');
-      pill.className='pill'; pill.id='p-'+col.id;
-      pill.addEventListener('click', (function(cid){return function(){tgC(cid);};})(col.id));
-
-      const num=document.createElement('span'); num.className='pn';
-      num.textContent='#'+String(col.n).padStart(2,'0');
-
-      const lb=document.createElement('span'); lb.className='pl';
-      lb.textContent=col.l;
-
-      const ck=document.createElement('span'); ck.className='pck';
-      ck.style.color=r.t; ck.textContent='\u2713';
-
-      pill.appendChild(num); pill.appendChild(lb); pill.appendChild(ck);
-      pp.appendChild(pill);
+      const pill=document.createElement('div');pill.className='pill';pill.id='p-'+col.id;
+      pill.addEventListener('click',(function(cid){return function(){tgC(cid);};})(col.id));
+      const num=document.createElement('span');num.className='pn';num.textContent='#'+String(col.n).padStart(2,'0');
+      const lb=document.createElement('span');lb.className='pl';lb.textContent=col.l;
+      const ck=document.createElement('span');ck.className='pck';ck.style.color=r.t;ck.textContent='\u2713';
+      pill.appendChild(num);pill.appendChild(lb);pill.appendChild(ck);pp.appendChild(pill);
     });
-
-    wrap.appendChild(head); wrap.appendChild(pp);
-    container.appendChild(wrap);
-  });
-  updCC();
+    wrap.appendChild(head);wrap.appendChild(pp);container.appendChild(wrap);
+  });updCC();
 }
-
-function tgC(id){SC.has(id)?SC.delete(id):SC.add(id); rfP(id); rfG(GB[id]); updCC(); updateHint();}
+function tgC(id){SC.has(id)?SC.delete(id):SC.add(id);rfP(id);rfG(GB[id]);updCC();updateHint();}
 function tgG(gid){
   const grp=GS.find(function(x){return x.id===gid;});
   const all=grp.c.every(function(c){return SC.has(c.id);});
   grp.c.forEach(function(c){all?SC.delete(c.id):SC.add(c.id);});
-  grp.c.forEach(function(c){rfP(c.id);});
-  rfG(grp); updCC(); updateHint();
+  grp.c.forEach(function(c){rfP(c.id);});rfG(grp);updCC();updateHint();
 }
 function rfP(id){
-  const el=g('p-'+id); if(!el)return;
-  const r=RP[GB[id].r];
-  if(SC.has(id)){
-    el.classList.add('on'); el.style.background=r.b; el.style.borderColor=r.d;
-    el.querySelector('.pn').style.color=r.t;
-    const pl=el.querySelector('.pl'); pl.style.color=r.t; pl.style.fontWeight='500';
-  } else {
-    el.classList.remove('on'); el.style.background=''; el.style.borderColor='';
-    el.querySelector('.pn').style.color='';
-    const pl=el.querySelector('.pl'); pl.style.color=''; pl.style.fontWeight='';
-  }
+  const el=g('p-'+id);if(!el)return;const r=RP[GB[id].r];
+  if(SC.has(id)){el.classList.add('on');el.style.background=r.b;el.style.borderColor=r.d;el.querySelector('.pn').style.color=r.t;const pl=el.querySelector('.pl');pl.style.color=r.t;pl.style.fontWeight='500';}
+  else{el.classList.remove('on');el.style.background='';el.style.borderColor='';el.querySelector('.pn').style.color='';const pl=el.querySelector('.pl');pl.style.color='';pl.style.fontWeight='';}
 }
 function rfG(grp){
-  const el=g('gck-'+grp.id), cn=g('gcn-'+grp.id); if(!el||!cn)return;
-  const r=RP[grp.r];
-  const n=grp.c.filter(function(c){return SC.has(c.id);}).length;
+  const el=g('gck-'+grp.id),cn=g('gcn-'+grp.id);if(!el||!cn)return;
+  const r=RP[grp.r];const n=grp.c.filter(function(c){return SC.has(c.id);}).length;
   cn.textContent=n+'/'+grp.c.length;
   if(n===grp.c.length){el.style.background=r.d;el.style.borderColor=r.d;el.textContent='\u2713';el.style.color=dk?'#111':'#fff';}
   else if(n>0){el.style.background=r.b;el.style.borderColor=r.d;el.textContent='\u2013';el.style.color=r.t;}
@@ -398,55 +443,42 @@ function updCC(){g('ccnt').textContent=SC.size+' / 57';}
 function selAll(){ACOLS.forEach(function(c){SC.add(c.id);});ACOLS.forEach(function(c){rfP(c.id);});GS.forEach(rfG);updCC();updateHint();}
 function clrAll(){SC.clear();ACOLS.forEach(function(c){rfP(c.id);});GS.forEach(rfG);updCC();updateHint();}
 
-// ── states — also use DOM ─────────────────────────────────────────────────
 function buildStates(){renderSt(ALL_ST);}
 function renderSt(list){
-  const gr=g('sgrid'); gr.innerHTML='';
+  const gr=g('sgrid');gr.innerHTML='';
   list.forEach(function(code){
-    const t=document.createElement('div');
-    t.className='stile'; t.id='st-'+code;
-    t.addEventListener('click', (function(c){return function(){tgSt(c);};})(code));
-    const sc=document.createElement('div'); sc.className='scode'; sc.textContent=code;
-    const sn=document.createElement('div'); sn.className='sname'; sn.textContent=SM[code]||code;
-    t.appendChild(sc); t.appendChild(sn);
-    apSt(t,code);
-    gr.appendChild(t);
+    const t=document.createElement('div');t.className='stile';t.id='st-'+code;
+    t.addEventListener('click',(function(c){return function(){tgSt(c);};})(code));
+    const sc=document.createElement('div');sc.className='scode';sc.textContent=code;
+    const sn=document.createElement('div');sn.className='sname';sn.textContent=SM[code]||code;
+    t.appendChild(sc);t.appendChild(sn);apSt(t,code);gr.appendChild(t);
   });
 }
 function apSt(t,c){
-  if(!t)return;
-  const r=RP.blue;
+  if(!t)return;const r=RP.blue;
   if(SS.has(c)){t.style.background=r.b;t.style.borderColor=r.d;t.querySelector('.scode').style.color=r.t;t.querySelector('.sname').style.color=r.t;}
   else{t.style.background='';t.style.borderColor='';t.querySelector('.scode').style.color='';t.querySelector('.sname').style.color='';}
 }
 function tgSt(c){SS.has(c)?SS.delete(c):SS.add(c);apSt(g('st-'+c),c);updSC();updateHint();}
 function updSC(){g('scnt').textContent=SS.size===0?'All states':SS.size+' selected';}
-function fltSt(q){
-  renderSt(ALL_ST.filter(function(c){
-    return c.toLowerCase().includes(q.toLowerCase())||(SM[c]||'').toLowerCase().includes(q.toLowerCase());
-  }));
-}
+function fltSt(q){renderSt(ALL_ST.filter(function(c){return c.toLowerCase().includes(q.toLowerCase())||(SM[c]||'').toLowerCase().includes(q.toLowerCase());}));}
 function selAllSt(){ALL_ST.forEach(function(c){SS.add(c);});ALL_ST.forEach(function(c){apSt(g('st-'+c),c);});updSC();updateHint();}
 function clrSt(){SS.clear();ALL_ST.forEach(function(c){apSt(g('st-'+c),c);});updSC();updateHint();}
 
-// ── years ─────────────────────────────────────────────────────────────────
 function buildYears(){
-  const mn=g('ymn'), mx=g('ymx');
-  mn.min=mx.min=2012; mn.max=mx.max=2025; mn.value=2012; mx.value=2025;
-  const row=g('ypills'); row.innerHTML='';
+  const mn=g('ymn'),mx=g('ymx');mn.min=mx.min=2012;mn.max=mx.max=2025;mn.value=2012;mx.value=2025;
+  const row=g('ypills');row.innerHTML='';
   ALL_YR.forEach(function(y){
-    const p=document.createElement('div');
-    p.className='ypill'; p.id='yp-'+y; p.textContent=y;
-    p.addEventListener('click', (function(yr){return function(){g('ymn').value=yr;g('ymx').value=yr;onYr();};})(y));
+    const p=document.createElement('div');p.className='ypill';p.id='yp-'+y;p.textContent=y;
+    p.addEventListener('click',(function(yr){return function(){g('ymn').value=yr;g('ymx').value=yr;onYr();};})(y));
     row.appendChild(p);
-  });
-  onYr();
+  });onYr();
 }
 function onYr(){
-  let mn=+g('ymn').value, mx=+g('ymx').value;
+  let mn=+g('ymn').value,mx=+g('ymx').value;
   if(mn>mx){if(document.activeElement===g('ymn')){g('ymn').value=mx;mn=mx;}else{g('ymx').value=mn;mx=mn;}}
-  yMin=mn; yMax=mx;
-  g('ymnv').textContent=mn; g('ymxv').textContent=mx;
+  yMin=mn;yMax=mx;
+  g('ymnv').textContent=mn;g('ymxv').textContent=mx;
   g('ydisp').textContent=mn===mx?String(mn):mn+'\u2013'+mx;
   ALL_YR.forEach(function(y){const p=g('yp-'+y);if(p)p.classList.toggle('in',y>=mn&&y<=mx);});
   updateHint();
@@ -458,7 +490,6 @@ function updateHint(){
   g('ahint').textContent=c+' \u00b7 '+s+' \u00b7 '+(yMin===yMax?String(yMin):yMin+'\u2013'+yMax);
 }
 
-// ── filter ────────────────────────────────────────────────────────────────
 function matches(row){
   if(SS.size>0&&!SS.has((row.STATE_CODE||row.state_code||'').trim()))return false;
   const y=parseInt((row.PERIOD_BEGIN||row.period_begin||'').slice(0,4));
@@ -468,28 +499,25 @@ function matches(row){
 function toCSVRow(row,cols){
   return cols.map(function(id){
     const v=String(row[id]!=null?row[id]:'');
-    if(v.indexOf(',')>=0||v.indexOf('"')>=0||v.indexOf('\n')>=0||v.indexOf('\r')>=0){
-      return '"'+v.replace(/"/g,'""')+'"';
-    }
+    if(v.indexOf(',')>=0||v.indexOf('"')>=0||v.indexOf('\n')>=0||v.indexOf('\r')>=0){return '"'+v.replace(/"/g,'""')+'"';}
     return v;
   }).join(',');
 }
 
-// ── SINGLE PASS: preview + export blob built together ─────────────────────
 function doProcess(){
   if(!curFile)return;
   rCols=SC.size>0?ACOLS.filter(function(c){return SC.has(c.id);}).map(function(c){return c.id;}):ACOLS.map(function(c){return c.id;});
-  previewRows=[]; totalMatched=0; exportBlob=null;
-  const btn=g('gobtn'); btn.disabled=true; btn.textContent='Scanning\u2026';
+  previewRows=[];totalMatched=0;exportBlob=null;
+  const btn=g('gobtn');btn.disabled=true;btn.textContent='Scanning\u2026';
   g('expbtn').disabled=true;
-  show('sproc'); g('sproc').scrollIntoView({behavior:'smooth',block:'start'});
+  show('sproc');g('sproc').scrollIntoView({behavior:'smooth',block:'start'});
   g('ptit').textContent='Scanning file\u2026';
   g('psub').textContent='Building preview and export in one pass';
-  let scanned=0, last=0;
+  let scanned=0,last=0;
   const csvParts=[rCols.join(',')+'\n'];
 
   Papa.parse(curFile,{
-    header:true, delimiter:detDelim, skipEmptyLines:true, chunkSize:524288,
+    header:true,delimiter:detDelim,skipEmptyLines:true,chunkSize:524288,
     chunk:function(res){
       scanned+=res.data.length;
       let chunk='';
@@ -497,13 +525,7 @@ function doProcess(){
         const row=res.data[i];
         if(!matches(row))continue;
         totalMatched++;
-        // preview: keep first PREV as objects
-        if(previewRows.length<PREV){
-          const o={};
-          rCols.forEach(function(id){o[id]=row[id]!=null?row[id]:'';});
-          previewRows.push(o);
-        }
-        // export: always write as compact CSV string
+        if(previewRows.length<PREV){const o={};rCols.forEach(function(id){o[id]=row[id]!=null?row[id]:'';});previewRows.push(o);}
         chunk+=toCSVRow(row,rCols)+'\n';
       }
       if(chunk)csvParts.push(chunk);
@@ -517,24 +539,17 @@ function doProcess(){
     },
     complete:function(){
       g('pbar').style.width='100%';
-      // build the blob once, reuse for export
       exportBlob=new Blob(csvParts,{type:'text/csv;charset=utf-8;'});
       const sx=SS.size>0&&SS.size<=5?'_'+[...SS].join('-'):SS.size>5?'_'+SS.size+'states':'';
       exportFilename='housing'+sx+'_'+yMin+'-'+yMax+'.csv';
       g('plbl').textContent='Done \u2014 '+totalMatched.toLocaleString()+' rows matched';
-      btn.disabled=false; btn.textContent='\u26a1 Process dataset';
+      btn.disabled=false;btn.textContent='\u26a1 Process dataset';
       g('expbtn').disabled=false;
-      setTimeout(function(){
-        hide('sproc'); renderPreview(); show('sout');
-        g('sout').scrollIntoView({behavior:'smooth',block:'start'});
-        g('btext').textContent=totalMatched.toLocaleString()+' rows matched';
-      },400);
+      setTimeout(function(){hide('sproc');renderPreview();show('sout');g('sout').scrollIntoView({behavior:'smooth',block:'start'});g('btext').textContent=totalMatched.toLocaleString()+' rows matched';},400);
     },
     error:function(err){
-      g('ptit').textContent='Error';
-      g('plbl').textContent=String(err.message||err);
-      btn.disabled=false; btn.textContent='\u26a1 Process dataset';
-      g('expbtn').disabled=false;
+      g('ptit').textContent='Error';g('plbl').textContent=String(err.message||err);
+      btn.disabled=false;btn.textContent='\u26a1 Process dataset';g('expbtn').disabled=false;
     }
   });
 }
@@ -543,47 +558,32 @@ function renderPreview(){
   const showing=Math.min(previewRows.length,PREV);
   g('osub').textContent=totalMatched.toLocaleString()+' rows matched \u00b7 showing first '+showing+' \u00b7 '+rCols.length+' columns';
   g('sbar').innerHTML=si(totalMatched.toLocaleString(),'total matched')+sd()+si(showing,'previewed')+sd()+si(rCols.length,'columns')+sd()+si(SS.size>0?SS.size:51,'states')+sd()+si(yMin===yMax?String(yMin):yMin+'\u2013'+yMax,'years');
-
-  // build header
   const headRow=document.createElement('tr');
-  const th0=document.createElement('th'); th0.className='rn'; th0.textContent='#'; headRow.appendChild(th0);
+  const th0=document.createElement('th');th0.className='rn';th0.textContent='#';headRow.appendChild(th0);
   rCols.forEach(function(id){
-    const c=CB[id], grp=GB[id], r=grp?RP[grp.r]:null;
-    const th=document.createElement('th');
-    if(r) th.style.color=r.t;
-    if(c){
-      const numSpan=document.createElement('span');
-      numSpan.style.cssText='font-family:var(--mo);font-size:9px;opacity:.5;margin-right:3px';
-      numSpan.textContent='#'+String(c.n).padStart(2,'0');
-      th.appendChild(numSpan);
-      th.appendChild(document.createTextNode(c.l));
-    } else {
-      th.textContent=id;
-    }
+    const c=CB[id],grp=GB[id],r=grp?RP[grp.r]:null;
+    const th=document.createElement('th');if(r)th.style.color=r.t;
+    if(c){const ns=document.createElement('span');ns.style.cssText='font-family:var(--mo);font-size:9px;opacity:.5;margin-right:3px';ns.textContent='#'+String(c.n).padStart(2,'0');th.appendChild(ns);th.appendChild(document.createTextNode(c.l));}
+    else{th.textContent=id;}
     headRow.appendChild(th);
   });
-  const thead=g('th'); thead.innerHTML=''; thead.appendChild(headRow);
-
-  // build rows
-  const tbody=g('tb'); tbody.innerHTML='';
+  const thead=g('th');thead.innerHTML='';thead.appendChild(headRow);
+  const tbody=g('tb');tbody.innerHTML='';
   previewRows.forEach(function(row,i){
     const tr=document.createElement('tr');
-    const td0=document.createElement('td'); td0.className='rn'; td0.textContent=String(i+1); tr.appendChild(td0);
+    const td0=document.createElement('td');td0.className='rn';td0.textContent=String(i+1);tr.appendChild(td0);
     rCols.forEach(function(id){
-      const td=document.createElement('td');
-      const v=row[id];
-      if(v===''||v==null){td.className='ec'; td.textContent='\u2014';}
-      else{td.textContent=String(v);}
+      const td=document.createElement('td');const v=row[id];
+      if(v===''||v==null){td.className='ec';td.textContent='\u2014';}else{td.textContent=String(v);}
       tr.appendChild(td);
     });
     tbody.appendChild(tr);
   });
 }
 
-// ── Export: blob already built in doProcess, just trigger download ─────────
 function doExport(){
   if(!exportBlob){alert('Run "Process dataset" first.');return;}
-  show('exov'); hide('ex-done');
+  show('exov');hide('ex-done');
   g('expbar').style.width='100%';
   g('explbl').textContent='Blob ready \u2014 triggering download\u2026';
   g('ex-sub').textContent=exportFilename;
@@ -591,22 +591,12 @@ function doExport(){
   const reader=new FileReader();
   reader.onload=function(e){g('ex-ta').value=e.target.result;};
   reader.readAsText(exportBlob.slice(0,3000));
-  show('ex-done');
-  triggerDownload();
+  show('ex-done');triggerDownload();
 }
-
 function triggerDownload(){
   if(!exportBlob)return;
-  try{
-    const url=URL.createObjectURL(exportBlob);
-    const a=document.createElement('a');
-    a.style.display='none'; a.href=url;
-    a.setAttribute('download',exportFilename);
-    document.body.appendChild(a); a.click();
-    setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},2000);
-  }catch(e){}
+  try{const url=URL.createObjectURL(exportBlob);const a=document.createElement('a');a.style.display='none';a.href=url;a.setAttribute('download',exportFilename);document.body.appendChild(a);a.click();setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},2000);}catch(e){}
 }
-
 function copyExport(){
   if(!exportBlob)return;
   const btn=g('ex-cp');
@@ -614,19 +604,567 @@ function copyExport(){
   rd.onload=function(e){
     const text=e.target.result;
     if(navigator.clipboard&&navigator.clipboard.writeText){
-      navigator.clipboard.writeText(text)
-        .then(function(){btn.textContent='\u2713 Copied!';setTimeout(function(){btn.textContent='\u{1F4CB} Copy to clipboard';},2500);})
-        .catch(function(){fallbackCopy(text,btn);});
-    } else {
-      fallbackCopy(text,btn);
-    }
+      navigator.clipboard.writeText(text).then(function(){btn.textContent='\u2713 Copied!';setTimeout(function(){btn.textContent='\u{1F4CB} Copy to clipboard';},2500);}).catch(function(){fallbackCopy(text,btn);});
+    }else{fallbackCopy(text,btn);}
   };
   rd.readAsText(exportBlob);
 }
-function fallbackCopy(text,btn){
-  const ta=g('ex-ta'); ta.value=text; ta.select();
-  try{document.execCommand('copy');btn.textContent='\u2713 Copied!';setTimeout(function(){btn.textContent='\u{1F4CB} Copy to clipboard';},2500);}catch(e){}
+function fallbackCopy(text,btn){const ta=g('ex-ta');ta.value=text;ta.select();try{document.execCommand('copy');btn.textContent='\u2713 Copied!';setTimeout(function(){btn.textContent='\u{1F4CB} Copy to clipboard';},2500);}catch(e){}}
+
+// Complete question bank — plain language, thorough analytics, clear narrative types
+const QUESTIONS = [
+
+  // ── PRICE TREND ────────────────────────────────────────────────────────
+  {
+    group: 'Sale price',
+    needs: ['MEDIAN_SALE_PRICE'],
+    q: 'How has the median home sale price changed over your selected time range?',
+    analytics: [
+      { s: 'Plot the trend line', d: 'Create a line chart of MEDIAN_SALE_PRICE over time. This is your baseline visual.' },
+      { s: 'Calculate total % change', d: 'Divide the last value by the first value, subtract 1. This gives the full period return.' },
+      { s: 'Run a simple linear regression', d: 'Regress MEDIAN_SALE_PRICE on time (month number). The slope tells you the average dollar increase per month. Check R² — if above 0.7, the trend is strong and consistent.' },
+      { s: 'Test for a structural break', d: 'If you suspect prices changed behavior at a point (e.g., mid-2022), split the data into two periods and compare regression slopes using a Chow test or just visual inspection of two separate trend lines.' },
+      { s: 'Describe variability', d: 'Calculate the standard deviation of monthly prices. High standard deviation means a volatile market; low means steady.' },
+    ],
+    narratives: [
+      { type: 'Change over time', how: 'Open by stating the price at the start and end of your period. Then find the single biggest year of change and explain what was happening economically at that moment.' },
+      { type: 'The turning point', how: 'Identify the exact month prices peaked or bottomed. Build your story around what changed before and after that date.' },
+      { type: 'Magnitude', how: 'Instead of just showing a percentage, convert it: "A home that cost $250,000 in 2019 would cost $X today." That makes the number real to a reader.' },
+    ],
+  },
+
+  {
+    group: 'Sale price',
+    needs: ['MEDIAN_SALE_PRICE_YOY'],
+    q: 'When did price growth accelerate, and when did it slow down or reverse?',
+    analytics: [
+      { s: 'Chart the YoY rate', d: 'Line chart of MEDIAN_SALE_PRICE_YOY. Positive = prices rising vs. a year ago. Negative = falling. This shows momentum, not just level.' },
+      { s: 'Find peak and trough', d: 'Note the month with the highest YoY and the month with the lowest (or most negative) YoY. These are your story\'s key dates.' },
+      { s: 'Test if deceleration is statistically significant', d: 'Compare mean YoY in the boom period vs. the cool-down period using a two-sample t-test. A p-value below 0.05 confirms the slowdown is real, not random noise.' },
+      { s: 'Smooth out noise', d: 'Calculate a 3-month rolling average of YoY to make the trend cleaner if the monthly data is choppy.' },
+    ],
+    narratives: [
+      { type: 'Change over time', how: 'Tell it as a speed story: prices were accelerating, then they hit the brakes. Show the acceleration and deceleration clearly.' },
+      { type: 'The turning point', how: 'Find the exact month YoY went negative and treat that as the central moment of your story.' },
+    ],
+  },
+
+  {
+    group: 'Sale price',
+    needs: ['MEDIAN_SALE_PRICE', 'MEDIAN_LIST_PRICE'],
+    q: 'Are homes selling above or below their asking price, and how has that shifted over time?',
+    analytics: [
+      { s: 'Calculate the gap each month', d: 'Subtract MEDIAN_LIST_PRICE from MEDIAN_SALE_PRICE. A positive number means homes sold above ask; negative means sellers discounted.' },
+      { s: 'Track AVG_SALE_TO_LIST as a ratio', d: 'If you have it: 1.02 means 2% above list on average. Chart this monthly to see when buyers stopped overbidding.' },
+      { s: 'Run a t-test between two periods', d: 'Compare the average gap during 2020-2021 vs. 2023-2024. A t-test tells you whether the difference is statistically significant.' },
+      { s: 'Correlation with inventory', d: 'If you also selected MONTHS_OF_SUPPLY: run a correlation between that and the sale-to-list gap. Low supply should correlate with homes selling above ask.' },
+    ],
+    narratives: [
+      { type: 'The gap', how: 'The gap between list and sale price is the story of who has power. When it closes (or flips), that\'s a power transfer worth writing about.' },
+      { type: 'Cause and effect', how: 'Connect the gap to inventory levels. Less supply → more competition → homes sell above ask. Show this relationship directly.' },
+    ],
+  },
+
+  // ── PRICE PER SQFT ─────────────────────────────────────────────────────
+  {
+    group: 'Price per square foot',
+    needs: ['MEDIAN_PPSF'],
+    q: 'How does the cost per square foot vary across states, and which markets are overpriced relative to their region?',
+    analytics: [
+      { s: 'Rank states by average PPSF', d: 'Group by STATE_CODE, calculate mean MEDIAN_PPSF, sort descending. This is your "most expensive space" ranking.' },
+      { s: 'Look for outliers', d: 'Calculate mean and standard deviation across all states. States more than 1.5 standard deviations above the mean are statistical outliers — that\'s your story.' },
+      { s: 'Run a regression of PPSF on time', d: 'For each state separately, regress PPSF on month number. States with steep slopes are appreciating fastest.' },
+      { s: 'Compare list PPSF vs sale PPSF', d: 'If you selected MEDIAN_LIST_PPSF: the difference shows whether sellers are pricing ahead of or behind the market.' },
+    ],
+    narratives: [
+      { type: 'Comparison', how: 'Pick two states at opposite ends of your PPSF ranking and build a side-by-side portrait of what that price difference means for a real buyer.' },
+      { type: 'Outlier', how: 'Identify the state that defies the regional trend — high PPSF in a low-cost area, or low PPSF in a high-cost area. That exception is your lead.' },
+    ],
+  },
+
+  // ── INVENTORY & SUPPLY ─────────────────────────────────────────────────
+  {
+    group: 'Inventory & supply',
+    needs: ['INVENTORY'],
+    q: 'Is the number of homes available for sale recovering, or is the market still undersupplied?',
+    analytics: [
+      { s: 'Chart inventory over time', d: 'Line chart of INVENTORY monthly. Look for the drop in 2020-2021 and whether it has rebounded.' },
+      { s: 'Compare to a pre-pandemic baseline', d: 'Calculate the average inventory for 2017-2019. Express each subsequent month as a percentage of that baseline: (current / baseline) × 100. Anything below 100 means fewer homes than normal.' },
+      { s: 'Trend test', d: 'For the period after the drop, run a linear regression of inventory on time. A positive slope means the market is slowly recovering supply.' },
+    ],
+    narratives: [
+      { type: 'Change over time', how: 'Show the before, the collapse, and the recovery (or lack of one). Use the baseline comparison to make the scale of the shortage clear to readers.' },
+      { type: 'Magnitude', how: 'Convert the shortage into homes: "The market is short approximately X homes compared to normal." That turns an abstract number into something tangible.' },
+    ],
+  },
+
+  {
+    group: 'Inventory & supply',
+    needs: ['MONTHS_OF_SUPPLY'],
+    q: 'Is this a buyer\'s market, a seller\'s market, or somewhere in between?',
+    analytics: [
+      { s: 'Chart months of supply with benchmark lines', d: 'Plot MONTHS_OF_SUPPLY over time. Add horizontal reference lines at 3 months (seller\'s market) and 6 months (buyer\'s market). The gap tells the whole story visually.' },
+      { s: 'Calculate time in each zone', d: 'Count the months where supply was below 3, between 3-6, and above 6. What share of your time range was each market type?' },
+      { s: 'Regression on time (recent period)', d: 'For the last 2 years, regress MONTHS_OF_SUPPLY on time. Is it trending toward balance (slope positive toward 6) or tightening again?' },
+      { s: 'Correlation with price', d: 'If you also have MEDIAN_SALE_PRICE_YOY: run a correlation with MONTHS_OF_SUPPLY. Negative correlation expected — lower supply should correspond with faster price growth.' },
+    ],
+    narratives: [
+      { type: 'The gap', how: 'Frame the story around the distance between where the market is and where balanced looks like. Closing that gap — or widening it — is the narrative.' },
+      { type: 'Change over time', how: 'Show when the market tipped into seller territory, how deep it went, and whether it is returning to balance.' },
+    ],
+  },
+
+  {
+    group: 'Inventory & supply',
+    needs: ['NEW_LISTINGS'],
+    q: 'Are new homes coming to market, or are sellers staying put?',
+    analytics: [
+      { s: 'Seasonal adjustment using YoY', d: 'New listings are highly seasonal. Use NEW_LISTINGS_YOY to compare each month to the same month a year ago — this removes the seasonal pattern.' },
+      { s: 'Build a listing index', d: 'Set the 2019 monthly average = 100. Express each month as a percentage of that. Any reading below 100 means fewer listings than before the pandemic.' },
+      { s: 'Test whether spring 2023 and 2024 showed recovery', d: 'Spring is the peak listing season. Run a t-test comparing spring (March-May) new listings in 2019 vs. 2023 vs. 2024 to see if the seasonal bounce is recovering.' },
+    ],
+    narratives: [
+      { type: 'Cause and effect', how: 'The main story here is the "lock-in effect": sellers who refinanced at low rates don\'t want to trade up into higher rates, so they stay. The listing data is the evidence.' },
+      { type: 'Change over time', how: 'Show the pandemic collapse in listings and whether the trend since has been flat, recovering, or still falling.' },
+    ],
+  },
+
+  // ── MARKET SPEED ──────────────────────────────────────────────────────
+  {
+    group: 'Market speed',
+    needs: ['MEDIAN_DOM'],
+    q: 'How long are homes sitting on the market, and has buyer urgency returned to normal?',
+    analytics: [
+      { s: 'Chart median days on market over time', d: 'Line chart of MEDIAN_DOM. Lower = faster = more competitive. Look for the 2021-2022 low and any subsequent rise.' },
+      { s: 'Compare to 2019 baseline', d: 'Calculate average DOM for 2019. Is the current DOM above, below, or back to that level? Express as: "X days faster/slower than normal."' },
+      { s: 'Run a linear regression on recent data', d: 'For the last 18-24 months, regress DOM on time. Positive slope = homes sitting longer (cooling). Negative slope = market speeding back up.' },
+      { s: 'Compare across states', d: 'If you have multiple states: rank by average DOM and test whether the differences between states are significant using a one-way ANOVA.' },
+    ],
+    narratives: [
+      { type: 'Change over time', how: 'Frame this as a story of urgency: how long did buyers have to make a decision at the market\'s fastest, and how long do they have today?' },
+      { type: 'Comparison', how: 'Compare the fastest and slowest markets in your data. The contrast between a 7-day market and a 60-day market tells a vivid story about where demand is concentrated.' },
+    ],
+  },
+
+  {
+    group: 'Market speed',
+    needs: ['OFF_MARKET_IN_TWO_WEEKS'],
+    q: 'What share of homes are going under contract within two weeks, and what does that tell us about demand?',
+    analytics: [
+      { s: 'Chart the series over time', d: 'Line chart of OFF_MARKET_IN_TWO_WEEKS. Above 50% means more than half of homes are snapped up in under 14 days — extremely competitive.' },
+      { s: 'Correlation with price growth', d: 'Run a correlation between OFF_MARKET_IN_TWO_WEEKS and MEDIAN_SALE_PRICE_YOY (if selected). High off-market rate should predict stronger price growth.' },
+      { s: 'State comparison', d: 'If multiple states are selected: rank by this metric and test statistical differences using ANOVA. Which states are consistently fast?' },
+    ],
+    narratives: [
+      { type: 'Magnitude', how: '"In [peak month], more than half of all homes in [state] went under contract before most buyers had even scheduled a showing." That statistic captures what the market felt like.' },
+      { type: 'Cause and effect', how: 'Connect high off-market rates to low inventory and multiple offers. Show the chain: low supply → fast sales → upward price pressure.' },
+    ],
+  },
+
+  {
+    group: 'Market speed',
+    needs: ['AVG_SALE_TO_LIST'],
+    q: 'Are buyers offering over asking price, and has that behavior changed with higher interest rates?',
+    analytics: [
+      { s: 'Chart the ratio over time', d: 'Values above 1.00 mean overbidding. Below 1.00 means discounting. Find when the ratio crossed each threshold.' },
+      { s: 'Test whether rate hikes changed buyer behavior', d: 'Split the data into pre-rate-hike (before March 2022) and post-rate-hike. Run a t-test on AVG_SALE_TO_LIST between the two periods. A significant result confirms the behavioral shift.' },
+      { s: 'Regression: rate proxy', d: 'If you have data across multiple years, use time as a proxy for rates (rates rose sharply in 2022). Regress AVG_SALE_TO_LIST on time for 2022-2024 to estimate the monthly decline in overbidding.' },
+    ],
+    narratives: [
+      { type: 'Cause and effect', how: 'Rate hikes are the cause; falling overbidding is the effect. Show that relationship clearly with a before/after comparison.' },
+      { type: 'The turning point', how: 'The month the ratio crossed back below 1.00 is the moment the seller\'s market ended in your chosen area. Build the story around that crossover.' },
+    ],
+  },
+
+  {
+    group: 'Market speed',
+    needs: ['SOLD_ABOVE_LIST'],
+    q: 'In how many sales did buyers actually pay more than the asking price, and where is this still happening?',
+    analytics: [
+      { s: 'Chart as a percentage over time', d: 'SOLD_ABOVE_LIST is the share of homes that closed above list price. Chart it monthly to see the surge and retreat.' },
+      { s: 'Geographic comparison', d: 'If multiple states: rank by average SOLD_ABOVE_LIST for a given year. Conduct a one-way ANOVA to confirm that differences across states are significant, not just noise.' },
+      { s: 'Pearson correlation with inventory', d: 'Correlate SOLD_ABOVE_LIST with MONTHS_OF_SUPPLY. The expected result (negative correlation) would confirm that tight supply drives overbidding.' },
+    ],
+    narratives: [
+      { type: 'Comparison', how: 'Compare peak overbidding (2021-2022) with today. The contrast — 60% of homes sold above list vs. 25% today — tells the reader exactly how much the market has cooled.' },
+      { type: 'Where it is still happening', how: 'Even as the national picture cools, some markets still have high overbidding rates. Identifying those exceptions is your most newsworthy angle.' },
+    ],
+  },
+
+  // ── PRICE DROPS ───────────────────────────────────────────────────────
+  {
+    group: 'Price drops & corrections',
+    needs: ['PRICE_DROPS'],
+    q: 'What share of sellers are cutting their asking prices, and does that predict where prices will fall next?',
+    analytics: [
+      { s: 'Chart PRICE_DROPS over time', d: 'Rising price-drop rates signal that sellers are ahead of the market. This is one of the best early-warning indicators.' },
+      { s: 'Lead-lag analysis', d: 'Shift the PRICE_DROPS series forward by 2 and 3 months, then correlate it with MEDIAN_SALE_PRICE_YOY. A strong correlation at a 2-3 month lag confirms that drops predict price declines.' },
+      { s: 'Rank states by drop rate', d: 'Group by STATE_CODE and average PRICE_DROPS. Sort descending to find where sellers are most out of step with buyers.' },
+      { s: 'Test the relationship statistically', d: 'Regress MEDIAN_SALE_PRICE_YOY (dependent) on lagged PRICE_DROPS (independent). A significant negative coefficient confirms that more drops today predict slower prices tomorrow.' },
+    ],
+    narratives: [
+      { type: 'Leading indicator', how: 'Frame price drops as a warning signal: "When sellers start cutting prices, closed-sale prices usually follow a few months later." Show the lag in your data to support that claim.' },
+      { type: 'Outlier', how: 'Identify the state where price drops are highest. That is either the most overpriced market or the most interest-rate sensitive — either way it is your most compelling example.' },
+    ],
+  },
+
+  // ── VOLUME & DEMAND ───────────────────────────────────────────────────
+  {
+    group: 'Sales volume',
+    needs: ['HOMES_SOLD'],
+    q: 'How much has the number of sales fallen, and does low volume mean the market is broken or just slow?',
+    analytics: [
+      { s: 'Index to 2019 baseline', d: 'Set 2019 average monthly sales = 100 per state. Every subsequent month becomes an index. Readings below 70 indicate very depressed activity.' },
+      { s: 'Regression on time (post-2022)', d: 'Regress HOMES_SOLD on time starting from mid-2022. Is volume stabilising (near-zero slope) or still declining (negative slope)?' },
+      { s: 'Correlation with price YoY', d: 'Run a correlation between HOMES_SOLD and MEDIAN_SALE_PRICE_YOY. Volume and price don\'t always move together — documenting their divergence is part of the story.' },
+    ],
+    narratives: [
+      { type: 'Change over time', how: 'Show the volume collapse clearly and put it in historical context. What was the last time this few homes changed hands? That comparison anchors the story.' },
+      { type: 'Two things that should move together but don\'t', how: 'Volume collapsed while prices remained elevated — that\'s the paradox of the 2022-2024 market. Explaining why (sellers won\'t budge, buyers can\'t afford to bid up) is the story.' },
+    ],
+  },
+
+  {
+    group: 'Sales volume',
+    needs: ['PENDING_SALES'],
+    q: 'What is the pipeline of homes under contract telling us about where sales will be in 30-60 days?',
+    analytics: [
+      { s: 'Use pending as a leading indicator', d: 'Pending sales reflect signed contracts. Closed sales follow in 30-60 days. Plot both on the same chart to visualise the lead-lag.' },
+      { s: 'Measure the lag formally', d: 'Shift PENDING_SALES forward by 1 and 2 months. Calculate correlation between shifted pending and HOMES_SOLD. The lag with the highest correlation tells you the typical contract-to-close time.' },
+      { s: 'Forecast from current reading', d: 'If PENDING_SALES_YOY is currently -10%, you can project that closed sales will likely be about 10% below last year in 1-2 months. State this as a conditional projection, not a certainty.' },
+    ],
+    narratives: [
+      { type: 'Cause and effect', how: 'Pending sales are the cause, closed sales are the effect. Once you establish the lag, you can make a credible near-term forecast — and that is powerful in a story.' },
+      { type: 'Leading indicator', how: 'Frame it as a window into the future: "Right now, the pipeline of contracts suggests the next two months will look like X."' },
+    ],
+  },
+
+  // ── COMBINED / MULTI-VARIABLE ─────────────────────────────────────────
+  {
+    group: 'Supply and price together',
+    needs: ['INVENTORY', 'MEDIAN_SALE_PRICE'],
+    q: 'Is tight supply actually driving higher prices, and can you prove that statistically?',
+    analytics: [
+      { s: 'Scatter plot first', d: 'Plot INVENTORY on the x-axis and MEDIAN_SALE_PRICE on the y-axis, one point per month. If there is a clear downward slope (less inventory = higher prices), the relationship is visible.' },
+      { s: 'Run a simple regression', d: 'Regress MEDIAN_SALE_PRICE (dependent) on INVENTORY (independent). The coefficient tells you: for every additional home in inventory, how much does the median price change?' },
+      { s: 'Check the R² value', d: 'R² above 0.5 means inventory explains more than half the variation in prices. That is strong evidence for your argument.' },
+      { s: 'Control for time', d: 'Add a time trend variable to the regression (month number) to separate the inventory effect from the general upward trend in prices over time.' },
+    ],
+    narratives: [
+      { type: 'Cause and effect', how: 'This is the clearest cause-and-effect story in housing data. Use your regression result to make the claim concrete: "For every 1,000-home drop in inventory, the median price rose by approximately $X."' },
+      { type: 'Surprising finding', how: 'If R² is low and the relationship is weak, that is also a story: prices rose even as inventory recovered slightly, suggesting demand was the more powerful force.' },
+    ],
+  },
+
+  {
+    group: 'Supply and price together',
+    needs: ['MONTHS_OF_SUPPLY', 'PRICE_DROPS'],
+    q: 'As supply loosens, are sellers starting to cut prices — and how quickly does that happen?',
+    analytics: [
+      { s: 'Correlate the two variables', d: 'Run a Pearson correlation between MONTHS_OF_SUPPLY and PRICE_DROPS. Expected: positive correlation — more supply means more sellers cutting prices.' },
+      { s: 'Test with a lag', d: 'Does rising supply today predict more price cuts in 1-2 months? Shift MONTHS_OF_SUPPLY forward and re-run the correlation to find the lag structure.' },
+      { s: 'Segment by state', d: 'If multiple states are selected: run the correlation separately for each state. Do all markets show the same pattern, or are some more resistant to cutting prices even as supply grows?' },
+    ],
+    narratives: [
+      { type: 'Cause and effect', how: 'Supply increasing is the cause; seller price concessions are the effect. Showing the lag between them gives the story a predictive dimension.' },
+      { type: 'The gap', how: 'In markets where supply is rising but price cuts aren\'t following yet, there is a gap between seller expectations and buyer reality. That tension is a story.' },
+    ],
+  },
+
+  {
+    group: 'Market heat index',
+    needs: ['MEDIAN_DOM', 'SOLD_ABOVE_LIST', 'INVENTORY'],
+    q: 'Can you build a single "market heat" score from multiple indicators and rank markets by it?',
+    analytics: [
+      { s: 'Normalise each variable', d: 'For each indicator, subtract the mean and divide by the standard deviation (z-score). This puts all variables on the same scale.' },
+      { s: 'Combine into a composite', d: 'Add z-score of SOLD_ABOVE_LIST, subtract z-score of MEDIAN_DOM, subtract z-score of INVENTORY. Higher score = hotter market. Customise the weights if you have a theoretical reason to.' },
+      { s: 'Rank and compare', d: 'Calculate the composite for each state/period. Rank markets from hottest to coolest. Chart how the composite changed over time.' },
+      { s: 'Validate the composite', d: 'Run a correlation between your composite score and MEDIAN_SALE_PRICE_YOY. If the composite is a good heat index, it should correlate strongly with price growth.' },
+    ],
+    narratives: [
+      { type: 'Comparison', how: 'A composite score lets you make direct comparisons: "Florida was 1.8 standard deviations hotter than the national average in 2021." That is more precise than saying "very hot."' },
+      { type: 'Change over time', how: 'Chart the composite for 3-4 states over time. You can show clearly when each market peaked and how quickly each cooled — all in one chart.' },
+    ],
+  },
+
+  {
+    group: 'Demand signals',
+    needs: ['PENDING_SALES', 'MEDIAN_SALE_PRICE'],
+    q: 'Do changes in buyer demand (pending sales) reliably predict where prices go next?',
+    analytics: [
+      { s: 'Lead-lag regression', d: 'Regress MEDIAN_SALE_PRICE_YOY on PENDING_SALES_YOY lagged by 1, 2, and 3 months. The lag with the highest R² tells you how far ahead pending sales predict prices.' },
+      { s: 'Granger causality test', d: 'If you are using R or Python: a Granger causality test formally tests whether past values of PENDING_SALES help predict MEDIAN_SALE_PRICE better than price alone. This is the gold-standard for a "leading indicator" claim.' },
+      { s: 'Simple correlation at multiple lags', d: 'Even without the formal test: calculate and chart the correlation at lags 0, 1, 2, 3 months. Peak correlation at lag 2 means pending sales leads prices by 2 months.' },
+    ],
+    narratives: [
+      { type: 'Leading indicator', how: 'If the lead-lag holds, you have a genuine predictive finding. Frame it as: "In this market, when pending sales fall, prices follow roughly X months later — and pending sales are falling right now."' },
+      { type: 'Surprising finding', how: 'If the lead-lag is weak or inconsistent, that is also interesting: prices are being set by something other than transaction volume. Explore what else might explain it (rate environment, investor activity, etc.).' },
+    ],
+  },
+
+  {
+    group: 'Geographic patterns',
+    needs: ['STATE_CODE'],
+    q: 'Which states are outliers — performing very differently from the regional or national average?',
+    analytics: [
+      { s: 'Calculate state averages', d: 'Group by STATE_CODE and compute the mean for all your selected numeric variables. This gives you one row per state to work with.' },
+      { s: 'Identify outliers statistically', d: 'For each variable, calculate the national mean and standard deviation. Flag any state more than 1.5 standard deviations above or below the mean as an outlier.' },
+      { s: 'Cluster analysis (optional)', d: 'If you have enough variables: run a k-means cluster (k=3 or 4) to group states by their overall market profile. Cheap-slow vs. expensive-fast vs. correcting are typical clusters.' },
+      { s: 'ANOVA across regions', d: 'Group states into regions (South, Northeast, Midwest, West). Run a one-way ANOVA to test whether regional differences in your key metric are statistically significant.' },
+    ],
+    narratives: [
+      { type: 'Outlier', how: 'Lead with the state that defies the pattern. Why is this market different? Is it structural (job market, geography, policy) or cyclical (overbuilt in the boom, correcting now)?' },
+      { type: 'Comparison', how: 'Pick the extreme cases — the most and least expensive, fastest and slowest — and tell them as a contrast story. The gap between them is the real finding.' },
+    ],
+  },
+
+  {
+    group: 'Geographic patterns',
+    needs: ['CITY', 'REGION', 'PARENT_METRO_REGION'],
+    q: 'How do housing markets within the same state vary by city or metro area?',
+    analytics: [
+      { s: 'Group by metro or city', d: 'Aggregate by PARENT_METRO_REGION or CITY. Calculate mean values for your selected metrics within each metro.' },
+      { s: 'Within-state variance', d: 'Calculate the standard deviation of prices (or DOM or supply) across metros within each state. A high standard deviation means the state is not uniform — urban/suburban/rural markets are diverging.' },
+      { s: 'Rank metros within each state', d: 'For each state, rank metros by price, speed, and supply. Identify which metros are driving the state average up or down.' },
+    ],
+    narratives: [
+      { type: 'Zooming in', how: 'Start at the state level, then zoom into the city level to show that state averages hide a lot of variation. The suburb vs. urban divide is often the most interesting local story.' },
+      { type: 'Outlier', how: 'Find the metro that is completely unlike its state. A fast-cooling market in an otherwise hot state — or a resilient pocket in a state that is declining broadly — is your best angle.' },
+    ],
+  },
+
+  {
+    group: 'Property type differences',
+    needs: ['PROPERTY_TYPE'],
+    q: 'Do single-family homes, condos, and townhouses behave differently in the same market?',
+    analytics: [
+      { s: 'Filter and compare side-by-side', d: 'For each property type in your selected area and time range, compute the same metrics. Build a comparison table: type | avg price | avg DOM | avg months of supply.' },
+      { s: 'T-test between types', d: 'Pick your key variable (e.g., MEDIAN_SALE_PRICE). Run a two-sample t-test between Single Family and Condo/Co-op. A significant result means the types are genuinely different, not just noisy samples.' },
+      { s: 'Chart price trends by type', d: 'Multi-line chart with one line per property type. Did condos peak and fall before single-family? Did they recover faster or slower?' },
+    ],
+    narratives: [
+      { type: 'Comparison', how: 'Property type differences are often counterintuitive. If condos recovered faster than single-family in your data, explain why — urban return, investor activity, relative affordability.' },
+      { type: 'Two things that should move together but don\'t', how: 'When condo and single-family markets diverge sharply, it is usually a signal of something structural changing in who is buying, where, and why.' },
+    ],
+  },
+
+  {
+    group: 'Time period comparison',
+    needs: ['PERIOD_BEGIN'],
+    q: 'What does comparing the same months across different years reveal about how the market has changed?',
+    analytics: [
+      { s: 'Extract year and month', d: 'From PERIOD_BEGIN, create separate year and month columns. This lets you group by month across years (all Januarys, all Julys, etc.).' },
+      { s: 'Year-over-year panel comparison', d: 'For each month of the year, plot the value across multiple years as grouped bars. This reveals whether 2024 spring was stronger or weaker than 2023 spring.' },
+      { s: 'Test for seasonal effects', d: 'Run a regression of your key variable on month dummies (January = 1 if January, 0 otherwise, etc.). Significant coefficients confirm that the market has predictable seasonal patterns.' },
+    ],
+    narratives: [
+      { type: 'Change over time', how: 'Year-over-year comparisons at the same calendar month eliminate seasonal noise. Use this to show a clean before/after: "Last June, the market looked like X. This June it looks like Y."' },
+      { type: 'The turning point', how: 'Identify the specific month and year when the market shifted gears. That moment anchors the whole narrative.' },
+    ],
+  },
+
+];
+
+// ── ramp colours ─────────────────────────────────────────────────────────
+const RC={teal:'#1D9E75',purple:'#7F77DD',blue:'#378ADD',coral:'#D85A30',
+  amber:'#BA7517',green:'#639922',pink:'#D4537E',red:'#E24B4A',gray:'#888780'};
+
+function renderGuide(){
+  const body=g('guide-body'),sub=g('guide-sub'),cnt=g('guide-count');
+  if(SC.size===0){
+    body.innerHTML='<div class="guide-empty">&#8593; Select some variables in Step 01 to see relevant research questions</div>';
+    sub.textContent='Select variables in Step 01 — questions matched to your selection will appear here.';
+    cnt.textContent='';return;
+  }
+  const matched=QUESTIONS.filter(function(q){
+    return q.needs.some(function(id){return SC.has(id);});
+  }).map(function(q){
+    return {q:q,score:q.needs.filter(function(id){return SC.has(id);}).length};
+  });
+  matched.sort(function(a,b){return b.score-a.score;});
+  if(matched.length===0){
+    body.innerHTML='<div class="guide-empty">No questions match yet. Try adding price, inventory, or speed variables.</div>';
+    sub.textContent='No matches.';cnt.textContent='';return;
+  }
+  sub.textContent=matched.length+' question'+(matched.length!==1?'s':'')+' matched — click any question to expand analytics and story guidance.';
+  cnt.textContent=matched.length+' matched';
+
+  // group by group label
+  const groups={};
+  matched.forEach(function(x){
+    const gl=x.q.group;if(!groups[gl])groups[gl]=[];groups[gl].push(x);
+  });
+
+  let out='';
+  Object.keys(groups).forEach(function(gname){
+    const items=groups[gname];
+    const theme=items[0].q.theme||'gray';
+    const bar='<div class="gbar" style="background:'+RC[theme]+'"></div>';
+    out+='<div class="qgroup"><div class="qgroup-hdr">'+bar+gname+'</div>';
+    items.forEach(function(item,idx){
+      const q=item.q,sc=item.score,tot=q.needs.length;
+      const qid='q-'+gname.replace(/\W/g,'_')+'-'+idx;
+      out+='<div class="qrow" id="'+qid+'" onclick="toggleQ(\''+qid+'\')">';
+      out+='<div class="qtrigger">';
+      out+='<span class="qarrow">&#9654;</span>';
+      out+='<span class="qtext">'+q.q+'</span>';
+      out+='<span class="qmatch">'+sc+'/'+tot+' vars</span>';
+      out+='</div>';
+      // expanded panels
+      out+='<div class="qdrop">';
+      // analytics panel
+      out+='<div class="qpanel"><div class="qpanel-lbl">&#128200; Analytics</div><ul>';
+      q.analytics.forEach(function(a){out+='<li><b>'+a.s+'</b> — '+a.d+'</li>';});
+      out+='</ul></div>';
+      // narrative panel
+      out+='<div class="qpanel"><div class="qpanel-lbl">&#128221; Story structure</div><ul>';
+      q.narratives.forEach(function(n){
+        out+='<li><span class="ntag">'+n.type+'</span><br>'+n.how+'</li>';
+      });
+      out+='</ul></div>';
+      // what to produce panel
+      out+='<div class="qpanel"><div class="qpanel-lbl">&#9989; What to produce</div><ul>';
+      out+='<li><b>Variables needed</b> — Export with: '+q.needs.join(', ')+', PERIOD_BEGIN, STATE_CODE.</li>';
+      out+='<li><b>Minimum chart</b> — A clearly labelled line or bar chart with a one-sentence title that states the finding, not just the topic. ("Prices peaked in mid-2022 and have since fallen 8%" — not "Home prices over time.")</li>';
+      out+='<li><b>One headline number</b> — Find the single most striking statistic in your output and put it at the top of your write-up before any context or explanation.</li>';
+      out+='<li><b>Explain the mechanism</b> — Don\'t just show what happened. Explain why using the other variables in your dataset as evidence.</li>';
+      out+='</ul></div>';
+      out+='</div>'; // qdrop
+      out+='</div>'; // qrow
+    });
+    out+='</div>'; // qgroup
+  });
+  body.innerHTML=out;
 }
+
+function toggleQ(id){
+  const el=g(id);if(el)el.classList.toggle('open');
+}
+
+// hook toggles
+const _tgC=tgC; tgC=function(id){_tgC(id);renderGuide();};
+const _tgG=tgG; tgG=function(gid){_tgG(gid);renderGuide();};
+const _sA=selAll; selAll=function(){_sA();renderGuide();};
+const _cA=clrAll; clrAll=function(){_cA();renderGuide();};
+
+renderGuide();
+
+
+// ── auto-load from repo ───────────────────────────────────────────────────
+// Change DATA_FILE to match your CSV filename in the repo.
+// The file must be in the same folder as this HTML (repo root).
+const DATA_FILE = 'data.csv';
+
+function showUploadFallback(reason) {
+  g('auto-bar').style.display = 'none';
+  g('uz').style.display = '';
+  g('btn-upload').style.display = '';
+  g('load-sub').textContent = reason || 'No dataset file found — upload your CSV manually.';
+  const uz = g('uz');
+  uz.addEventListener('click', function(){ g('fi').click(); });
+}
+
+function onAutoLoaded(rowCount, mb, delim) {
+  g('auto-bar').style.display = 'none';
+  const ok = g('repo-ok');
+  ok.style.display = 'flex';
+  g('repo-ok-title').textContent = rowCount.toLocaleString() + ' rows loaded from ' + DATA_FILE;
+  g('repo-ok-sub').textContent = mb + ' MB \u00b7 ' + (delim === '\t' ? 'Tab' : 'Comma') + ' delimited \u00b7 Loaded automatically from the repo';
+  g('load-sub').textContent = 'Dataset loaded from the repository.';
+  g('btn-upload').style.display = '';
+  g('btn-upload').textContent = '\u21ba Reload file';
+  g('hbadge').style.display = 'flex';
+  g('btext').textContent = rowCount.toLocaleString() + ' rows';
+}
+
+function startAutoLoad() {
+  g('auto-bar').style.display = '';
+  g('load-sub').textContent = 'Loading ' + DATA_FILE + ' from repository\u2026';
+  g('auto-pbi').style.width = '5%';
+  g('auto-lbl').textContent = 'Connecting to ' + DATA_FILE + '\u2026';
+
+  // HEAD check first so we fail fast if the file isn't there
+  fetch(DATA_FILE, { method: 'HEAD' })
+    .then(function(res) {
+      if (!res.ok) throw new Error('not found');
+      const bytes = parseInt(res.headers.get('content-length') || '0');
+      const mb = bytes > 0 ? (bytes / 1024 / 1024).toFixed(0) : '?';
+      g('auto-lbl').textContent = 'Found ' + DATA_FILE + ' (' + mb + ' MB) \u2014 streaming\u2026';
+      g('auto-pbi').style.width = '10%';
+      streamFromURL(DATA_FILE, mb);
+    })
+    .catch(function() {
+      showUploadFallback('No \u2018' + DATA_FILE + '\u2019 found in this folder \u2014 upload your CSV below.');
+    });
+}
+
+function streamFromURL(url, mb) {
+  // Detect delimiter from first few KB
+  fetch(url, { headers: { Range: 'bytes=0-4095' } })
+    .then(function(r) { return r.text(); })
+    .then(function(sample) {
+      const l1 = sample.replace(/^\uFEFF/, '').split('\n')[0] || '';
+      detDelim = (l1.match(/\t/g) || []).length > (l1.match(/,/g) || []).length ? '\t' : ',';
+      parseFull(url, mb);
+    })
+    .catch(function() {
+      detDelim = ',';
+      parseFull(url, mb);
+    });
+}
+
+function parseFull(url, mb) {
+  let scanned = 0, last = 0;
+
+  Papa.parse(url, {
+    download: true,
+    header: true,
+    delimiter: detDelim,
+    skipEmptyLines: true,
+    chunkSize: 524288,
+    chunk: function(res) {
+      scanned += res.data.length;
+      const now = Date.now();
+      if (now - last > 300) {
+        last = now;
+        const pct = Math.min(90, 10 + scanned / Math.max(scanned + 5000, 1) * 80);
+        g('auto-pbi').style.width = pct + '%';
+        g('auto-lbl').textContent = scanned.toLocaleString() + ' rows read\u2026';
+      }
+    },
+    complete: function(res) {
+      const data = res.data || [];
+      if (data.length === 0) {
+        showUploadFallback('File loaded but contained no rows. Try uploading manually.');
+        return;
+      }
+      g('auto-pbi').style.width = '100%';
+      g('auto-lbl').textContent = 'Done \u2014 ' + data.length.toLocaleString() + ' rows';
+
+      // Re-use existing onParseComplete path
+      onParseComplete(data, url, mb);
+      onAutoLoaded(data.length, mb, detDelim);
+    },
+    error: function(err) {
+      showUploadFallback('Could not parse ' + DATA_FILE + ': ' + String(err.message || err));
+    }
+  });
+}
+
+// Manual upload still works as a fallback / override
+fi.addEventListener('change', function(e) {
+  if (e.target.files[0]) loadHeader(e.target.files[0]);
+});
+uz.addEventListener('click', function() { g('fi').click(); });
+uz.addEventListener('dragover', function(e) { e.preventDefault(); uz.classList.add('drag'); });
+uz.addEventListener('dragleave', function() { uz.classList.remove('drag'); });
+uz.addEventListener('drop', function(e) {
+  e.preventDefault(); uz.classList.remove('drag');
+  if (e.dataTransfer.files[0]) loadHeader(e.dataTransfer.files[0]);
+});
+
+// Kick off on page load
+startAutoLoad();
 
 </script>
 </body>
